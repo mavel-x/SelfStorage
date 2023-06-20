@@ -43,9 +43,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # 3rd-party
-
+    'phonenumber_field',
     # custom
-
+    'storage',
+    'account',
 ]
 
 MIDDLEWARE = [
@@ -105,6 +106,8 @@ DATABASES = {'default': DEFAULT_DATABASE}
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
+AUTH_USER_MODEL = 'account.User'
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -136,8 +139,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_ROOT = BASE_DIR / 'static'
 STATIC_URL = 'static/'
+STATICFILES_DIRS = (BASE_DIR / 'static',)
 
 MEDIA_ROOT = BASE_DIR / 'media'
 MEDIA_URL = 'media/'
