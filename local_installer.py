@@ -11,5 +11,8 @@ def main():
 
     os.system('python manage.py migrate')
 
+    if not os.path.isdir('media'):
+        os.mkdir('media')
+
 if __name__ == '__main__':
     main()
