@@ -62,11 +62,12 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'SelfStorage.urls'
 
 TEMPLATES_DIR = BASE_DIR / 'templates'
+EMAIL_TEMPLATES_DIR = TEMPLATES_DIR / 'emails'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [TEMPLATES_DIR],
+        'DIRS': [TEMPLATES_DIR, EMAIL_TEMPLATES_DIR],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -156,3 +157,5 @@ EMAIL_HOST_USER = env.str('EMAIL_HOST_USER', None)
 EMAIL_HOST_PASSWORD = env.str('EMAIL_HOST_PASSWORD', None)
 EMAIL_USE_TLS = True
 EMAIL_SEND_FROM = env.str('EMAIL_SEND_FROM', None)
+if env.bool('NO_EMAIL', False):
+    EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
