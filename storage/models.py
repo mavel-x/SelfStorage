@@ -127,7 +127,6 @@ class Discount(models.Model):
         Storage,
         related_name='discounts',
         verbose_name='склад',
-        verbose_name_plural='склады',
     )
     promocode = models.CharField(
         'Промокод',
