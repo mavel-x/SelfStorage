@@ -1,5 +1,9 @@
 from dateutil import relativedelta
-from django.core.validators import MinValueValidator, FileExtensionValidator
+from django.core.validators import (
+    MaxValueValidator,
+    MinValueValidator,
+    FileExtensionValidator,
+)
 from django.db import models
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
@@ -105,17 +109,8 @@ class Booking(models.Model):
     )
     start_date = models.DateField('Дата начала аренды')
     end_date = models.DateField('Дата окончания аренды')
-    amount = models.PositiveSmallIntegerField(
-        verbose_name='Стоимость аренды',
-        validators=[MinValueValidator(500)],
-    )
-    payment_url = models.URLField(
-        'Ссылка на оплату',
-        blank=True,
-        null=True,
-    )
-    payment_status = models.BooleanField(
-        verbose_name='Оплачено',
+    move_out = models.BooleanField(
+        verbose_name='Бокс освобождён',
         default=False,
     )
 
@@ -125,12 +120,6 @@ class Booking(models.Model):
 
     def __str__(self):
         return f'{self.box} {self.start_date} - {self.end_date}'
-
-    def save(self, *args, **kwargs):
-        months_difference = relativedelta.relativedelta(self.end_date, self.start_date).months
-        self.amount = self.box.price * months_difference
-
-        super(Booking, self).save(*args, **kwargs)
 
 
 class Discount(models.Model):
@@ -144,18 +133,47 @@ class Discount(models.Model):
         max_length=10,
     )
     percent = models.SmallIntegerField(
-        'Процентная скидка',
+        'Скидка (%)',
         default=0,
-        validators=[MinValueValidator(0)],
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
     )
-    money = models.SmallIntegerField(
-        'Денежная скидка',
-        default=0,
-        validators=[MinValueValidator(0)],
-    )
+    start_date = models.DateField('Дата начала действия')
+    end_date = models.DateField('Дата окончания действия')
+
     class Meta:
         verbose_name = 'Скидка'
         verbose_name_plural = 'Скидки'
 
     def __str__(self):
-        return self.promocode
+        return f'{self.promocode} - скидка {self.percent}%'
+
+
+class Invoice(models.Model):
+    booking = models.ForeignKey(
+        Booking,
+        on_delete=models.CASCADE,
+        related_name='payments',
+        verbose_name='Аренда',
+    )
+    final_date = models.DateField('Конечная дата оплаты')
+    amount = models.PositiveSmallIntegerField(
+        verbose_name='Стоимость аренды',
+        validators=[MinValueValidator(500)],
+    )
+    payment_status = models.BooleanField(
+        verbose_name='Оплачено',
+        default=False,
+    )
+    payment_url = models.URLField(
+        'Ссылка на оплату',
+        blank=True,
+        null=True,
+    )
+
+    class Meta:
+        verbose_name = 'Счёт'
+        verbose_name_plural = 'Счета'
+
+    def __str__(self):
+        return f'Счёт {self.booking.box}/{self.amount}руб./{self.final_date}'
+    
