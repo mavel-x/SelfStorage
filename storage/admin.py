@@ -7,6 +7,7 @@ from storage.models import (
     Box,
     Booking,
     Discount,
+    Invoice,
 )
 
 
@@ -59,12 +60,8 @@ class BookingAdmin(admin.ModelAdmin):
     list_display = (
         'user',
         'box',
-        'amount',
-        'payment_status',
+        'move_out',
     )
-    readonly_fields = [
-        'amount',
-    ]
     list_per_page = 20
 
 
@@ -73,6 +70,16 @@ class DiscountAdmin(admin.ModelAdmin):
     list_display = (
         'promocode',
         'percent',
-        'money',
+    )
+    list_per_page = 20
+
+
+@admin.register(Invoice)
+class InvoiceAdmin(admin.ModelAdmin):
+    list_display = (
+        'booking',
+        'amount',
+        'final_date',
+        'payment_status',
     )
     list_per_page = 20
