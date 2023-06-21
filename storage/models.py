@@ -123,11 +123,6 @@ class Booking(models.Model):
 
 
 class Discount(models.Model):
-    storage = models.ManyToManyField(
-        Storage,
-        related_name='discounts',
-        verbose_name='склад',
-    )
     promocode = models.CharField(
         'Промокод',
         max_length=10,
@@ -172,6 +167,14 @@ class Invoice(models.Model):
     cancelled = models.BooleanField(
         verbose_name='Отменен',
         default=False,
+    )
+    discount = models.ForeignKey(
+        Discount,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name='invoices',
+        verbose_name='Скидка',
     )
 
     class Meta:
