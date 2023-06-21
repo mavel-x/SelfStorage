@@ -108,7 +108,7 @@ class Booking(models.Model):
         verbose_name='Бокс',
     )
     start_date = models.DateField('Дата начала аренды')
-    end_date = models.DateField('Дата окончания аренды')
+    end_date = models.DateField('Дата окончания аренды', null=True)
     empty = models.BooleanField(
         verbose_name='Бокс освобождён',
         default=False,
@@ -137,8 +137,8 @@ class Discount(models.Model):
         default=0,
         validators=[MinValueValidator(0), MaxValueValidator(100)],
     )
-    start_date = models.DateField('Дата начала действия')
-    end_date = models.DateField('Дата окончания действия')
+    start_date = models.DateField('Дата начала действия', null=True)
+    end_date = models.DateField('Дата окончания действия', null=True)
 
     class Meta:
         verbose_name = 'Скидка'
