@@ -109,7 +109,7 @@ class Booking(models.Model):
     )
     start_date = models.DateField('Дата начала аренды')
     end_date = models.DateField('Дата окончания аренды')
-    move_out = models.BooleanField(
+    empty = models.BooleanField(
         verbose_name='Бокс освобождён',
         default=False,
     )
@@ -126,7 +126,8 @@ class Discount(models.Model):
     storage = models.ManyToManyField(
         Storage,
         related_name='discounts',
-        verbose_name='Склады',
+        verbose_name='склад',
+        verbose_name_plural='склады',
     )
     promocode = models.CharField(
         'Промокод',
@@ -152,16 +153,16 @@ class Invoice(models.Model):
     booking = models.ForeignKey(
         Booking,
         on_delete=models.CASCADE,
-        related_name='payments',
+        related_name='invoices',
         verbose_name='Аренда',
     )
-    final_date = models.DateField('Конечная дата оплаты')
+    pays_until = models.DateField('Оплата до')
     amount = models.PositiveSmallIntegerField(
         verbose_name='Стоимость аренды',
         validators=[MinValueValidator(500)],
     )
-    payment_status = models.BooleanField(
-        verbose_name='Оплачено',
+    paid = models.BooleanField(
+        verbose_name='Оплачен',
         default=False,
     )
     payment_url = models.URLField(
@@ -169,11 +170,15 @@ class Invoice(models.Model):
         blank=True,
         null=True,
     )
+    cancelled = models.BooleanField(
+        verbose_name='Отменен',
+        default=False,
+    )
 
     class Meta:
         verbose_name = 'Счёт'
         verbose_name_plural = 'Счета'
 
     def __str__(self):
-        return f'Счёт {self.booking.box}/{self.amount}руб./{self.final_date}'
+        return f'Счёт {self.booking.box}/{self.amount}руб./{self.pays_until}'
     
