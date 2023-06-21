@@ -150,9 +150,9 @@ MEDIA_URL = 'media/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-EMAIL_HOST = env.str('EMAIL_HOST')
-EMAIL_PORT = env.int('EMAIL_PORT')
-EMAIL_HOST_USER = env.str('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = env.str('EMAIL_HOST_PASSWORD')
+EMAIL_HOST = env.str('EMAIL_HOST', None)
+EMAIL_PORT = env.int('EMAIL_PORT', None)
+EMAIL_HOST_USER = env.str('EMAIL_HOST_USER', None)
+EMAIL_HOST_PASSWORD = env.str('EMAIL_HOST_PASSWORD', None)
 EMAIL_USE_TLS = True
-
+EMAIL_SEND_FROM = env.str('EMAIL_SEND_FROM', None)
