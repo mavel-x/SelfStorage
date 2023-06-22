@@ -42,6 +42,18 @@ class Storage(models.Model):
     def first_image(self):
         return self.images.first()
     
+    def count_boxes(self):
+        return Box.objects.filter(storage=self).count()
+
+    def count_empty_boxes(self):
+        return Box.objects.filter(storage=self, is_busy=False).count()
+
+    def get_min_price(self):
+        return Box.objects.filter(storage=self).order_by('price').first().price
+
+    def get_max_height(self):
+        return Box.objects.filter(storage=self).order_by('-height').first()
+    
 
 class Image(models.Model):
     storage = models.ForeignKey(
