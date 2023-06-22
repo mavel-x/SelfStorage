@@ -5,8 +5,9 @@ from django.db.models.signals import pre_delete
 from django.dispatch import receiver
 from phonenumber_field.modelfields import PhoneNumberField
 
+
 class User(AbstractUser):
-    phone = PhoneNumberField('Телефон')
+    phone = PhoneNumberField('Телефон', null=True, blank=True)
     avatar = models.ImageField(
         verbose_name='Аватар',
         blank=True,

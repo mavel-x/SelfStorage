@@ -10,9 +10,14 @@ admin.site.login_form = EmailAdminAuthenticationForm
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
     list_display = (
+        'email',
         'username',
         'phone',
         'preview',
+    )
+    list_display_links = (
+        'email',
+        'username',
     )
     list_per_page = 20
     readonly_fields = ('preview',)
