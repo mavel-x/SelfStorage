@@ -14,6 +14,7 @@ from storage.models import (
 @admin.register(Storage)
 class StorageAdmin(admin.ModelAdmin):
     list_display = (
+        'city',
         'address',
         'preview',
     )
@@ -51,8 +52,16 @@ class BoxAdmin(admin.ModelAdmin):
         'storage',
         'number',
         'price',
+        'square',
+        'floor',
     )
     list_per_page = 20
+
+    def save_formset(self, request, form, formset, change):
+        if 'width' in form.changed_data or 'depth' in form.changed_data :
+           print(form.changed_data)
+
+        formset.save(commit=False)
 
 
 @admin.register(Booking)
