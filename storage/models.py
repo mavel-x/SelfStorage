@@ -12,6 +12,10 @@ from account.models import User
 
 
 class Storage(models.Model):
+    city = models.CharField(
+        'Город',
+        max_length=200,
+    )
     address = models.CharField(
         'Адрес',
         max_length=200,
@@ -25,7 +29,7 @@ class Storage(models.Model):
         max_digits=3,
         decimal_places=1,
         default=2.5,
-        validators=[MinValueValidator(1)],
+        validators=[MinValueValidator(2.5),MaxValueValidator(10.0)]
     )
 
     class Meta:
@@ -33,7 +37,7 @@ class Storage(models.Model):
         verbose_name_plural = 'Склады'
 
     def __str__(self):
-        return self.address
+        return  f'{self.city} - {self.address}'
     
     def first_image(self):
         return self.images.first()
@@ -71,19 +75,48 @@ def delete_image(sender, instance, **kwargs):
 
 
 class Box(models.Model):
+    storage = models.ForeignKey(
+        Storage,
+        on_delete=models.CASCADE,
+        related_name='boxes',
+        verbose_name='Склад',
+    )
     number = models.PositiveIntegerField(
         'Номер',
         default=1,
         validators=[MinValueValidator(1)],
     )
-    storage = models.ForeignKey(
-        Storage,
-        on_delete=models.PROTECT,
-        related_name='boxes',
-        verbose_name='Склад',
+    price = models.PositiveSmallIntegerField('Стоимость (руб./мес.)')
+    floor = models.PositiveSmallIntegerField(
+        'Этаж',
+        default=1,
+        validators=[MinValueValidator(1), MaxValueValidator(3)]
     )
-    price = models.PositiveSmallIntegerField(
-        verbose_name='Стоимость (руб./мес.)',
+    width = models.DecimalField(
+        'Ширина(М)',
+        max_digits=2,
+        decimal_places=1,
+        validators=[MinValueValidator(1.0), MaxValueValidator(4.0)]
+    )
+    height = models.DecimalField(
+        'Высота(М)',
+        max_digits=2,
+        decimal_places=1,
+        validators=[MinValueValidator(1.0), MaxValueValidator(4.0)]
+    )
+    depth = models.DecimalField(
+        'Глубина(М)',
+        max_digits=2,
+        decimal_places=1,
+        validators=[MinValueValidator(1.0), MaxValueValidator(4.0)]
+    )
+    square = models.DecimalField(
+        'Площадь (М²)',
+        max_digits=3,
+        decimal_places=1,
+        blank=True,
+        null=True,
+        validators=[MinValueValidator(1.0), MaxValueValidator(16.0)]
     )
 
     class Meta:
