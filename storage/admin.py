@@ -8,6 +8,7 @@ from storage.models import (
     Booking,
     Discount,
     Invoice,
+    Lead,
 )
 
 
@@ -54,6 +55,7 @@ class BoxAdmin(admin.ModelAdmin):
         'price',
         'square',
         'floor',
+        'is_busy'
     )
     list_per_page = 20
 
@@ -69,7 +71,7 @@ class BookingAdmin(admin.ModelAdmin):
     list_display = (
         'user',
         'box',
-        'empty',
+        'end_date',
     )
     list_per_page = 20
 
@@ -90,5 +92,16 @@ class InvoiceAdmin(admin.ModelAdmin):
         'amount',
         'pays_until',
         'paid',
+        'is_overdue',
+    )
+    list_per_page = 20
+
+
+@admin.register(Lead)
+class LeadAdmin(admin.ModelAdmin):
+    list_display = (
+        'name',
+        'email',
+        'date',
     )
     list_per_page = 20

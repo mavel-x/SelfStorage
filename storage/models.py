@@ -1,4 +1,3 @@
-from dateutil import relativedelta
 from django.core.validators import (
     MaxValueValidator,
     MinValueValidator,
@@ -130,6 +129,10 @@ class Box(models.Model):
         null=True,
         validators=[MinValueValidator(1.0), MaxValueValidator(16.0)]
     )
+    is_busy = models.BooleanField(
+        verbose_name='Занят',
+        default=False,
+    )
 
     class Meta:
         verbose_name = 'Бокс'
@@ -152,12 +155,8 @@ class Booking(models.Model):
         related_name='bookings',
         verbose_name='Бокс',
     )
-    start_date = models.DateField('Дата начала аренды')
+    start_date = models.DateField('Дата начала аренды', null=True)
     end_date = models.DateField('Дата окончания аренды', null=True)
-    empty = models.BooleanField(
-        verbose_name='Бокс освобождён',
-        default=False,
-    )
 
     class Meta:
         verbose_name = 'Аренда'
@@ -221,6 +220,10 @@ class Invoice(models.Model):
         related_name='invoices',
         verbose_name='Скидка',
     )
+    is_overdue = models.BooleanField(
+        verbose_name='Просрочен',
+        default=False,
+    )
 
     class Meta:
         verbose_name = 'Счёт'
@@ -228,4 +231,31 @@ class Invoice(models.Model):
 
     def __str__(self):
         return f'Счёт {self.booking.box}/{self.amount}руб./{self.pays_until}'
-    
+
+
+class Lead(models.Model):
+    email = models.EmailField('Email')
+    name = models.CharField(
+        'Имя',
+        max_length=50,
+        blank=True,
+        null=True,
+    )
+    date = models.DateField(
+        'Дата обращения',
+        blank=True,
+        null=True,
+    )
+    description = models.CharField(
+        'Описание',
+        max_length=200,
+        blank=True,
+        null=True,
+    )
+
+    class Meta:
+        verbose_name = 'Лид'
+        verbose_name_plural = 'Лиды'
+
+    def __str__(self):
+        return f'{self.email} {self.date}'
