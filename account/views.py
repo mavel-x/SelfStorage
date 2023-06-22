@@ -4,14 +4,36 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, FormView
 
+from .models import User
 from .forms import LoginForm, SignUpForm
+
+
+def get_display_name(user: User):
+    if user.first_name and user.last_name:
+        return ' '.join((user.first_name, user.last_name))
+    if name := (user.first_name or user.last_name):
+        return name
+    if user.username:
+        return user.username
+    return user.email
 
 
 class AccountView(TemplateView):
     template_name = 'my-rent.html'
 
     def get(self, request, *args, **kwargs):
-        return render(request, self.template_name)
+        user: User = self.request.user
+        email = user.email
+        phone_number = user.phone
+        name = get_display_name(user)
+
+
+
+        return render(request, self.template_name, {
+            'email': email,
+            'phone_number': phone_number,
+            'name': name,
+        })
 
 
 class LoginView(FormView):
