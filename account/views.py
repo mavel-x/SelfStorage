@@ -1,5 +1,8 @@
+import json
+
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, FormView
@@ -26,9 +29,6 @@ class AccountView(TemplateView):
         email = user.email
         phone_number = user.phone
         name = get_display_name(user)
-
-
-
         return render(request, self.template_name, {
             'email': email,
             'phone_number': phone_number,
@@ -48,9 +48,11 @@ class LoginView(FormView):
         if user is not None:
             login(self.request, user)
             messages.success(self.request, 'Добро пожаловать!')
-            return super().form_valid(form)
-        messages.error(self.request, 'Неверный логин или пароль.')
-        return self.form_invalid(form)
+            return JsonResponse({'status': 'ok'})
+        return JsonResponse({'status': 'error', 'errors': 'Неверный логин или пароль.'})
+
+    def form_invalid(self, form):
+        return JsonResponse({'status': 'error', 'errors': form.errors})
 
 
 class SignUpView(FormView):
@@ -62,7 +64,16 @@ class SignUpView(FormView):
         user = form.save()
         login(self.request, user)
         messages.success(self.request, 'Добро пожаловать!')
-        return super().form_valid(form)
+        return JsonResponse({'status': 'ok'})
+
+    def form_invalid(self, form):
+        print()
+        print(form.errors)
+        return JsonResponse({
+            'status': 'error',
+            # 'errors':  json.dumps(form.errors, ensure_ascii=False),
+            'errors': form.errors,
+        })
 
 
 def logout_view(request):

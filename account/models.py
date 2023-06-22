@@ -7,6 +7,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 
 class User(AbstractUser):
+    email = models.EmailField(unique=True)
     phone = PhoneNumberField('Телефон', null=True, blank=True)
     avatar = models.ImageField(
         verbose_name='Аватар',
