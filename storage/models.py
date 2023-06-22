@@ -1,4 +1,3 @@
-from dateutil import relativedelta
 from django.core.validators import (
     MaxValueValidator,
     MinValueValidator,
@@ -12,6 +11,10 @@ from account.models import User
 
 
 class Storage(models.Model):
+    city = models.CharField(
+        'Город',
+        max_length=200,
+    )
     address = models.CharField(
         'Адрес',
         max_length=200,
@@ -25,7 +28,7 @@ class Storage(models.Model):
         max_digits=3,
         decimal_places=1,
         default=2.5,
-        validators=[MinValueValidator(1)],
+        validators=[MinValueValidator(2.5),MaxValueValidator(10.0)]
     )
 
     class Meta:
@@ -33,10 +36,22 @@ class Storage(models.Model):
         verbose_name_plural = 'Склады'
 
     def __str__(self):
-        return self.address
+        return  f'{self.city} - {self.address}'
     
     def first_image(self):
         return self.images.first()
+    
+    def count_boxes(self):
+        return Box.objects.filter(storage=self).count()
+
+    def count_empty_boxes(self):
+        return Box.objects.filter(storage=self, is_busy=False).count()
+
+    def get_min_price(self):
+        return Box.objects.filter(storage=self).order_by('price').first().price
+
+    def get_max_height(self):
+        return Box.objects.filter(storage=self).order_by('-height').first()
     
 
 class Image(models.Model):
@@ -71,19 +86,52 @@ def delete_image(sender, instance, **kwargs):
 
 
 class Box(models.Model):
+    storage = models.ForeignKey(
+        Storage,
+        on_delete=models.CASCADE,
+        related_name='boxes',
+        verbose_name='Склад',
+    )
     number = models.PositiveIntegerField(
         'Номер',
         default=1,
         validators=[MinValueValidator(1)],
     )
-    storage = models.ForeignKey(
-        Storage,
-        on_delete=models.PROTECT,
-        related_name='boxes',
-        verbose_name='Склад',
+    price = models.PositiveSmallIntegerField('Стоимость (руб./мес.)')
+    floor = models.PositiveSmallIntegerField(
+        'Этаж',
+        default=1,
+        validators=[MinValueValidator(1), MaxValueValidator(3)]
     )
-    price = models.PositiveSmallIntegerField(
-        verbose_name='Стоимость (руб./мес.)',
+    width = models.DecimalField(
+        'Ширина(М)',
+        max_digits=2,
+        decimal_places=1,
+        validators=[MinValueValidator(1.0), MaxValueValidator(4.0)]
+    )
+    height = models.DecimalField(
+        'Высота(М)',
+        max_digits=2,
+        decimal_places=1,
+        validators=[MinValueValidator(1.0), MaxValueValidator(4.0)]
+    )
+    depth = models.DecimalField(
+        'Глубина(М)',
+        max_digits=2,
+        decimal_places=1,
+        validators=[MinValueValidator(1.0), MaxValueValidator(4.0)]
+    )
+    square = models.DecimalField(
+        'Площадь (М²)',
+        max_digits=3,
+        decimal_places=1,
+        blank=True,
+        null=True,
+        validators=[MinValueValidator(1.0), MaxValueValidator(16.0)]
+    )
+    is_busy = models.BooleanField(
+        verbose_name='Занят',
+        default=False,
     )
 
     class Meta:
@@ -107,12 +155,8 @@ class Booking(models.Model):
         related_name='bookings',
         verbose_name='Бокс',
     )
-    start_date = models.DateField('Дата начала аренды')
+    start_date = models.DateField('Дата начала аренды', null=True)
     end_date = models.DateField('Дата окончания аренды', null=True)
-    empty = models.BooleanField(
-        verbose_name='Бокс освобождён',
-        default=False,
-    )
 
     class Meta:
         verbose_name = 'Аренда'
@@ -176,6 +220,10 @@ class Invoice(models.Model):
         related_name='invoices',
         verbose_name='Скидка',
     )
+    is_overdue = models.BooleanField(
+        verbose_name='Просрочен',
+        default=False,
+    )
 
     class Meta:
         verbose_name = 'Счёт'
@@ -183,4 +231,31 @@ class Invoice(models.Model):
 
     def __str__(self):
         return f'Счёт {self.booking.box}/{self.amount}руб./{self.pays_until}'
-    
+
+
+class Lead(models.Model):
+    email = models.EmailField('Email')
+    name = models.CharField(
+        'Имя',
+        max_length=50,
+        blank=True,
+        null=True,
+    )
+    date = models.DateField(
+        'Дата обращения',
+        blank=True,
+        null=True,
+    )
+    description = models.CharField(
+        'Описание',
+        max_length=200,
+        blank=True,
+        null=True,
+    )
+
+    class Meta:
+        verbose_name = 'Лид'
+        verbose_name_plural = 'Лиды'
+
+    def __str__(self):
+        return f'{self.email} {self.date}'

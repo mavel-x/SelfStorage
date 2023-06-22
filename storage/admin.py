@@ -8,12 +8,14 @@ from storage.models import (
     Booking,
     Discount,
     Invoice,
+    Lead,
 )
 
 
 @admin.register(Storage)
 class StorageAdmin(admin.ModelAdmin):
     list_display = (
+        'city',
         'address',
         'preview',
     )
@@ -51,8 +53,17 @@ class BoxAdmin(admin.ModelAdmin):
         'storage',
         'number',
         'price',
+        'square',
+        'floor',
+        'is_busy'
     )
     list_per_page = 20
+
+    def save_formset(self, request, form, formset, change):
+        if 'width' in form.changed_data or 'depth' in form.changed_data :
+           print(form.changed_data)
+
+        formset.save(commit=False)
 
 
 @admin.register(Booking)
@@ -60,7 +71,7 @@ class BookingAdmin(admin.ModelAdmin):
     list_display = (
         'user',
         'box',
-        'empty',
+        'end_date',
     )
     list_per_page = 20
 
@@ -81,5 +92,16 @@ class InvoiceAdmin(admin.ModelAdmin):
         'amount',
         'pays_until',
         'paid',
+        'is_overdue',
+    )
+    list_per_page = 20
+
+
+@admin.register(Lead)
+class LeadAdmin(admin.ModelAdmin):
+    list_display = (
+        'name',
+        'email',
+        'date',
     )
     list_per_page = 20
