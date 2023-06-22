@@ -1,7 +1,13 @@
 from django import forms
+from django.contrib.admin.forms import AdminAuthenticationForm
 from django.contrib.auth.forms import UserCreationForm
 
 from .models import User
+
+
+class EmailAdminAuthenticationForm(AdminAuthenticationForm):
+    username = forms.EmailField(label='Email', max_length=75)
+
 
 class LoginForm(forms.Form):
     email = forms.EmailField()

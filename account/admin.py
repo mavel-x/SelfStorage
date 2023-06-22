@@ -1,7 +1,10 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 
-from account.models import User
+from .models import User
+from .forms import EmailAdminAuthenticationForm
+
+admin.site.login_form = EmailAdminAuthenticationForm
 
 
 @admin.register(User)
