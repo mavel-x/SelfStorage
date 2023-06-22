@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, FormView
 
-from .forms import LoginForm
+from .forms import LoginForm, SignUpForm
 
 
 class AccountView(TemplateView):
@@ -28,16 +28,16 @@ class LoginView(FormView):
             messages.success(self.request, 'Добро пожаловать!')
             return super().form_valid(form)
         messages.error(self.request, 'Неверный логин или пароль.')
-        return redirect(reverse_lazy('index'), {'login_form': LoginForm()})
-
-    def dispatch(self, request, *args, **kwargs):
-        print(self.request.path)
-        print(self.request.body)
-        print()
-        return super().dispatch(request, *args, **kwargs)
+        return self.form_invalid(form)
 
 
+class SignUpView(FormView):
+    form_class = SignUpForm
+    template_name = 'index.html'
+    success_url = reverse_lazy('index')
 
-
-
-
+    def form_valid(self, form):
+        user = form.save()
+        login(self.request, user)
+        messages.success(self.request, 'Добро пожаловать!')
+        return super().form_valid(form)
