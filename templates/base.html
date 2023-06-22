@@ -10,6 +10,37 @@
 	<title>Boxes</title>
 </head>
 <body>
+
+{% if messages %}
+    <div id="messages-container"></div>
+    <script>
+        {% for message in messages %}
+            var messageElement = document.createElement('div');
+            messageElement.classList.add('message-popup');
+            messageElement.textContent = "{{ message }}";
+            document.getElementById('messages-container').appendChild(messageElement);
+            setTimeout(function() {
+                messageElement.remove();
+            }, 3000);
+        {% endfor %}
+    </script>
+    <style>
+        #messages-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+        }
+        .message-popup {
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+    </style>
+{% endif %}
+
+
 <header class="navbar navbar-expand-xl navbar-light fixed-top bg-white py-5">
 	<nav class="container">
 		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -30,9 +61,18 @@
 				<li class="nav-item me-5">
 					<a class="nav-link SelfStorage_black" href="#">Арендовать бокс</a>
 				</li>
-				<li class="nav-item me-5">
-					<a class="nav-link SelfStorage_green" href="#" data-bs-toggle="modal" data-bs-target="#SignModal">Войти</a>
-				</li>
+        {% if not request.user.is_authenticated %}
+          <li class="nav-item me-5">
+  					<a class="nav-link SelfStorage_green" href="#" data-bs-toggle="modal" data-bs-target="#SignModal">Войти</a>
+          </li>
+        {% else %}
+          <li class="nav-item me-5">
+            <a class="nav-link SelfStorage_green" href="{% url 'account' %}">Личный кабинет</a>
+          </li>
+          <li class="nav-item me-5">
+            <a class="nav-link SelfStorage_green" href="{% url 'logout' %}">Выйти</a>
+          </li>
+        {% endif %}
 				{% comment %} <li class="nav-item d-flex align-items-center me-5">
 					<a href="#" class="me-2 mb-1">
 						<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="#F28A4F" class="bi bi-bell" viewBox="0 0 16 16">
@@ -65,11 +105,29 @@
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body d-flex justify-content-center align-items-center">
-				<form class="d-flex flex-column align-items-center" style="max-width: 420px">
+
+				<form action="{% url 'signup' %}" method="post"
+              class="d-flex flex-column align-items-center" style="max-width: 420px">
+          {% csrf_token %}
+
 					<h1 class="modal-title text-center fw-bold mb-3">Регистрация</h1>
-					<input type="email" required name="EMAIL_CREATE" class="form-control  border-8 mb-4 py-3 px-5 border-0 fs_24 SelfStorage__bg_lightgrey" placeholder="E-mail">
-					<input type="text" required name="PASSWORD_CREATE" class="form-control  border-8 mb-4 py-3 px-5 border-0 fs_24 SelfStorage__bg_lightgrey" placeholder="Пароль">
-					<input type="text" required name="PASSWORD_CONFIRM" class="form-control  border-8 mb-4 py-3 px-5 border-0 fs_24 SelfStorage__bg_lightgrey" placeholder="Подтверждение пароля">
+
+          {% if form.errors %}
+            <ul class="errorlist">
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+                {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+          {% endif %}
+
+					<input type="email" required name="email" class="form-control  border-8 mb-4 py-3 px-5 border-0 fs_24 SelfStorage__bg_lightgrey" placeholder="E-mail">
+					<input type="text" required name="password1" class="form-control  border-8 mb-4 py-3 px-5 border-0 fs_24 SelfStorage__bg_lightgrey" placeholder="Пароль">
+					<input type="text" required name="password2" class="form-control  border-8 mb-4 py-3 px-5 border-0 fs_24 SelfStorage__bg_lightgrey" placeholder="Подтверждение пароля">
 					<span class="fw-light SelfStorage_grey">Нажимая на кнопку, вы подтверждаете свое <a href="#" class="SelfStorage_grey">согласие на обработку персональных данных</a></span>
 					<button class="btn border-8 py-3 px-5 mt-5 mb-3 w-100 text-white fs_24 SelfStorage__bg_orange SelfStorage__btn2_orange">Зарегистрироваться</button>
 					<span>Уже зарегистрированы? <a href="#" class="SelfStorage_orange" data-bs-toggle="modal" data-bs-target="#SignModal" data-bs-dismiss="modal" aria-label="Close">Войти в личный кабинет</a></span>
@@ -78,17 +136,36 @@
 		</div>
 	</div>
 </aside>
-<aside class="modal fade" id="SignModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+
+
+<aside id="SignModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" class="modal fade">
 	<div class="modal-dialog modal-dialog-scrollable modal-fullscreen">
 		<div class="modal-content">
 			<div class="modal-header border-0">
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body d-flex justify-content-center align-items-center">
-				<form class="d-flex flex-column align-items-center" style="max-width: 420px">
+
+				<form action="{% url 'login' %}" method="post"
+              class="d-flex flex-column align-items-center" style="max-width: 420px">
+          {% csrf_token %}
 					<h1 class="modal-title text-center fw-bold mb-3">Вход</h1>
-					<input type="email" required name="EMAIL" class="form-control  border-8 mb-4 py-3 px-5 border-0 fs_24 SelfStorage__bg_lightgrey" placeholder="E-mail">
-					<input type="text" required name="PASSWORD" class="form-control  border-8 mb-4 py-3 px-5 border-0 fs_24 SelfStorage__bg_lightgrey" placeholder="Пароль">
+
+          {% if form.errors %}
+            <ul class="errorlist">
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+                {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+          {% endif %}
+
+					<input type="email" required name="email" class="form-control  border-8 mb-4 py-3 px-5 border-0 fs_24 SelfStorage__bg_lightgrey" placeholder="E-mail">
+					<input type="text" required name="password" class="form-control  border-8 mb-4 py-3 px-5 border-0 fs_24 SelfStorage__bg_lightgrey" placeholder="Пароль">
 					<a href="#" class="SelfStorage_orange" data-bs-toggle="modal" data-bs-target="#ForgetModal" data-bs-dismiss="modal" aria-label="Close">Забыли пароль?</a>
 					<button class="btn border-8 py-3 px-5 mt-5 mb-3 w-100 text-white fs_24 SelfStorage__bg_orange SelfStorage__btn2_orange">Войти</button>
 					<span>Нет аккаунта?  <a href="#" class="SelfStorage_orange" data-bs-toggle="modal" data-bs-target="#RegModal" data-bs-dismiss="modal" aria-label="Close">Зарегистрируйтесь на сайте</a></span>
@@ -97,6 +174,9 @@
 		</div>
 	</div>
 </aside>
+
+
+
 <aside class="modal fade" id="ForgetModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 	<div class="modal-dialog modal-dialog-scrollable modal-fullscreen">
 		<div class="modal-content">

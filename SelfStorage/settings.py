@@ -124,6 +124,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = ['account.backends.EmailBackend']
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
@@ -159,3 +161,6 @@ EMAIL_USE_TLS = True
 EMAIL_SEND_FROM = env.str('EMAIL_SEND_FROM', None)
 if env.bool('NO_EMAIL', False):
     EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
+
+# EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+# EMAIL_FILE_PATH = Path.home() / 'Desktop'
