@@ -37,7 +37,8 @@ python manage.py migrate
 Для отправки email-уведомлений:
 - `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD` -
 получите эти настройки в вашем SMTP-сервисе.
-- `EMAIL_SEND_FROM` - адрес отправителя
+- `EMAIL_SEND_FROM` - адрес отправителя (домен должен быть разрешен SMTP-сервисом)
+- `NO_EMAIL` - не отправлять имейлы (во время разработки)
 
 Следующие переменные обязательны в случае `DEBUG` в значении `False`:
 - `ENGINE` - коннектор для базы данных;
