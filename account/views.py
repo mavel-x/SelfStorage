@@ -1,5 +1,5 @@
 from django.contrib import messages
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, FormView
@@ -41,3 +41,9 @@ class SignUpView(FormView):
         login(self.request, user)
         messages.success(self.request, 'Добро пожаловать!')
         return super().form_valid(form)
+
+
+def logout_view(request):
+    logout(request)
+    messages.success(request, 'До свидания!')
+    return redirect('index')
