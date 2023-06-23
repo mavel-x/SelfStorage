@@ -1,5 +1,3 @@
-import json
-
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
@@ -8,7 +6,7 @@ from django.urls import reverse_lazy
 from django.views.generic import TemplateView, FormView
 
 from .models import User
-from .forms import LoginForm, SignUpForm
+from .forms import LoginForm, SignUpForm, AccountChangeForm
 
 
 def get_display_name(user: User):
@@ -26,14 +24,29 @@ class AccountView(TemplateView):
 
     def get(self, request, *args, **kwargs):
         user: User = self.request.user
-        email = user.email
-        phone_number = user.phone
-        name = get_display_name(user)
+        display_name = get_display_name(user)
         return render(request, self.template_name, {
-            'email': email,
-            'phone_number': phone_number,
-            'name': name,
+            'display_name': display_name,
         })
+
+
+class AccountChangeView(FormView):
+    form_class = AccountChangeForm
+    template_name = 'my-rent.html'
+    success_url = reverse_lazy('account')
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+    def form_valid(self, form: AccountChangeForm):
+        form.update_user()
+        messages.success(self.request, 'Данные сохранены.')
+        return JsonResponse({'status': 'ok'})
+
+    def form_invalid(self, form):
+        return JsonResponse({'status': 'error', 'form_errors': form.errors})
 
 
 class LoginView(FormView):
@@ -52,7 +65,7 @@ class LoginView(FormView):
         return JsonResponse({'status': 'error', 'errors': 'Неверный логин или пароль.'})
 
     def form_invalid(self, form):
-        return JsonResponse({'status': 'error', 'errors': form.errors})
+        return JsonResponse({'status': 'error', 'form_errors': form.errors})
 
 
 class SignUpView(FormView):
@@ -71,7 +84,6 @@ class SignUpView(FormView):
         print(form.errors)
         return JsonResponse({
             'status': 'error',
-            # 'errors':  json.dumps(form.errors, ensure_ascii=False),
             'errors': form.errors,
         })
 
