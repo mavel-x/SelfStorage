@@ -25,31 +25,38 @@
 						</div>
 
 						<div class="col-12 col-sm-7 d-flex flex-column">
-							<form>
+							<form id="account-change-form">
+                <div id="account-change-form-errors" class="errors"></div>
 								<label class="fs_24 SelfStorage_green ms-2" for="account-email">E-mail</label>
 								<input type="email" name="email" id="account-email" class="form-control fs_24 ps-2 SelfStorage__input"
                        value="{{ request.user.email }}" disabled>
 
                 <div id="account-hidden-fields" hidden>
+                  <div id="error_account_first_name"></div>
                   <label class="fs_24 SelfStorage_green ms-2" for="account-first-name">Имя</label>
                   <input type="text" name="first_name" id="account-first-name" class="form-control fs_24 ps-2 SelfStorage__input"
                          value="{{ user.first_name }}">
+                  <div id="error_account_last_name"></div>
                   <label class="fs_24 SelfStorage_green ms-2" for="account-last-name">Фамилия</label>
                   <input type="text" name="last_name" id="account-last-name" class="form-control fs_24 ps-2 SelfStorage__input"
                          value="{{ user.last_name }}">
                 </div>
 
+                <div id="error_account_phone"></div>
 								<label class="fs_24 SelfStorage_green ms-2" for="account-phone">Телефон</label>
 								<input type="tel" name="phone" id="account-phone" class="form-control fs_24 ps-2 SelfStorage__input"
                        value="{% firstof request.user.phone 'не указан' %}" disabled>
 
                 <div id="account-new-password-container" hidden>
+                  <div id="error_account_password1"></div>
                   <label class="fs_24 SelfStorage_green ms-2" for="account-new-password1">Новый пароль</label>
 								  <input type="password" name="password1" id="account-new-password1" class="form-control fs_24 ps-2 SelfStorage__input" value="">
+                  <div id="error_account_password2"></div>
                   <label class="fs_24 SelfStorage_green ms-2" for="account-new-password2">Еще раз новый пароль</label>
 								  <input type="password" name="password2" id="account-new-password2" class="form-control fs_24 ps-2 SelfStorage__input" value="">
                 </div>
 
+                <div id="error_account_password_old"></div>
                 <label id="account-password-old-label" class="fs_24 SelfStorage_green ms-2" for="account-password-old">Пароль</label>
                 <input type="password" name="password_old" id="account-password-old" class="form-control fs_24 ps-2 SelfStorage__input" value="111111111" disabled>
 

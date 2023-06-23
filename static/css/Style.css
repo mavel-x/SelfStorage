@@ -179,3 +179,9 @@ body {
 .errorlist li {
     color: #d73e3e;
 }
+
+.long-form-errors {
+    margin-top: 1rem;
+    margin-bottom: 0;
+    padding-left: 0;
+}
