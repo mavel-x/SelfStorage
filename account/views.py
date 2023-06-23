@@ -5,6 +5,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, FormView
 
+from storage.models import Booking
 from .models import User
 from .forms import LoginForm, SignUpForm, AccountChangeForm
 
@@ -25,8 +26,14 @@ class AccountView(TemplateView):
     def get(self, request, *args, **kwargs):
         user: User = self.request.user
         display_name = get_display_name(user)
+
+        bookings = Booking.objects.filter(user=user).prefetch_related('box', 'box__storage')
+
+
+
         return render(request, self.template_name, {
             'display_name': display_name,
+            'bookings': bookings,
         })
 
 
