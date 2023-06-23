@@ -1,7 +1,6 @@
 import datetime
 import random
 
-
 from django.core.management.base import BaseCommand
 
 from account.models import User
@@ -80,7 +79,7 @@ def create_boxes():
             count = random.choice(count_numbers)
             floor = random.choice(floors)
 
-            for num in range(1, count+1, floor):
+            for num in range(1, count + 1, floor):
                 width = random.choice(sizes)
                 height = round(random.uniform(1.0, storage.height.__float__()), 1)
                 depth = random.choice(sizes)
@@ -111,44 +110,40 @@ def create_bookings():
             User.objects.get(email='user1@test.ru'),
             '2023-01-01',
             '2023-04-01',
-            True, # Бокс занят
+            True,  # Бокс занят
         ),
         (
             User.objects.get(email='user2@test.ru'),
             '2023-01-01',
             '2023-05-01',
-            True, # Бокс занят
+            True,  # Бокс занят
         ),
         (
             User.objects.get(email='user3@test.ru'),
             '2023-01-01',
             '2023-07-01',
-            False, # Бокс занят
+            False,  # Бокс занят
         ),
         (
             User.objects.get(email='user4@test.ru'),
             '2023-01-01',
             '2024-01-01',
-            True, # Бокс занят
+            True,  # Бокс занят
         ),
         (
             User.objects.get(email='user5@test.ru'),
             datetime.datetime.today().date(),
             '2023-12-01',
-            False, # Бокс занят
+            False,  # Бокс занят
         ),
     )
 
     for booking_notes in bookings:
-        print(booking_notes)
-
         user, start_date, end_date, is_busy = booking_notes
         booking_obj, created = Booking.objects.get_or_create(
             user=user,
             box=random.choice(Box.objects.filter(is_busy=False)),
         )
-
-        print(booking_obj)
 
         if created:
             booking_obj.start_date = start_date
@@ -190,11 +185,11 @@ def create_discounts():
 
 def create_leads():
     leads = (
-        ('Ольга', 'lead1@test.ru', datetime.datetime.today().date(), 'Хочу хранить мебель, важна влажность!'),
+        ('Ольга', 'lead1@test.ru', None, 'Хочу хранить мебель, важна влажность!'),
         ('Андрей', 'lead2@test.ru', '2023-01-10', 'Ищу места для хранения консервы!'),
         ('Виктор', 'lead3@test.ru', '2022-12-16', 'А у вас автомобиль можно припарковать?'),
         ('Семён', 'lead4@test.ru', '2023-06-10', ''),
-        ('', 'lead5@test.ru', datetime.datetime.today().date(), ''),
+        (None, 'lead5@test.ru', None, None),
     )
 
     for lead_notes in leads:
@@ -202,8 +197,9 @@ def create_leads():
         lead_obj, created = Lead.objects.get_or_create(email=email)
 
         if created:
+            if date:
+                lead_obj.date = date
             lead_obj.name = name
-            lead_obj.date = date
             lead_obj.description = description
             lead_obj.save()
 
@@ -215,14 +211,14 @@ def create_leads():
 def main(**options):
     if options.get('d'):
         for model in (
-            Invoice,
-            Booking,
-            Box,
-            Storage,
-            Image,
-            Discount,
-            User,
-            Lead,
+                Invoice,
+                Booking,
+                Box,
+                Storage,
+                Image,
+                Discount,
+                User,
+                Lead,
         ):
             print(f'Очистка модели {model.__name__}', end=' ')
             if model is User:
