@@ -1,7 +1,10 @@
+from django.http import JsonResponse
 from django.shortcuts import render
-from django.views.generic import TemplateView
-from .models import Storage
+from django.views.generic import TemplateView, FormView
+from django.urls import reverse_lazy
 
+from .models import Storage, Lead
+from .forms import LeadForm
 
 class IndexView(TemplateView):
     template_name = 'index.html'
@@ -25,3 +28,27 @@ class BoxesViews(TemplateView):
             'storages': Storage.objects.all(),
         }
         return render(request, self.template_name, context)
+
+
+class LeadViews(FormView):
+    form_class = LeadForm
+    success_url = reverse_lazy('index')
+
+    def form_valid(self, form):
+        print(form.cleaned_data)
+
+        Lead.objects.create(
+            email=form.cleaned_data.get('email'),
+            name=form.cleaned_data.get('name'),
+            description=form.cleaned_data.get('description'),
+        )
+
+        return JsonResponse({
+            'status': 'ok',
+        })
+
+    def form_invalid(self, form):
+        print(form.cleaned_data)
+        return JsonResponse({
+            'status': 'error',
+        })

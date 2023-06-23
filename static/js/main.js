@@ -50,3 +50,32 @@ $(document).on('submit', '#signup-form', function (e){
         }
     })
 })
+
+$(document).on('submit', '#lead-form', function (e){
+    e.preventDefault();
+    let csrftoken = Cookies.get('csrftoken');
+    $.ajax({
+        type: 'POST',
+        url: 'lead/',
+        headers: {'X-CSRFToken': csrftoken},
+        data: {
+            email: $('#lead-form-email').val(),
+            name: $('#lead-form-name').val(),
+            description: $('#lead-form-description').val(),
+        },
+        success: function (data) {
+            if (data.status === 'error') {
+                for (let field in data.errors) {
+                    let errorList = $('<ul class="errorlist">');
+                    for (let error of data.errors[field]) {
+                        errorList.append($('<li>').text(error));
+                    }
+                    $('#error_' + field).html(errorList);
+                }
+            }
+            else if (data.status === 'ok') {
+                location.reload();
+            }
+        }
+    })
+})
