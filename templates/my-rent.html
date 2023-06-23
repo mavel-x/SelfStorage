@@ -26,37 +26,35 @@
 
 						<div class="col-12 col-sm-7 d-flex flex-column">
 							<form>
-								<label class="fs_24 SelfStorage_green ms-2" for="EMAIL">E-mail</label>
-								<input type="email" name="EMAIL_EDIT" id="EMAIL" class="form-control fs_24 ps-2 SelfStorage__input"
-                       value="{{ email }}" disabled>
-								<label class="fs_24 SelfStorage_green ms-2" for="PHONE">Телефон</label>
-								<input type="tel" name="PHONE_EDIT" id="PHONE" class="form-control fs_24 ps-2 SelfStorage__input"
-                       value="{% firstof phone 'не указан' %}" disabled>
-								<label class="fs_24 SelfStorage_green ms-2" for="PASSWORD">Пароль</label>
-								<input type="password" name="PASSWORD_EDIT" id="PASSWORD" class="form-control fs_24 ps-2 SelfStorage__input" value="111111111" disabled>
-								<button type="submit" class="btn SelfStorage_green ps-1" id="save" style="display: none">Сохранить</button>
-								<a class="btn SelfStorage_orange ps-1" id="edit">Редактировать</a>
-								<script>
-									document.getElementById('edit').addEventListener('click', e => {
-										e.preventDefault()
-										document.getElementById('EMAIL').disabled = false
-										document.getElementById('PHONE').disabled = false
-										document.getElementById('PASSWORD').disabled = false
-										document.getElementById('PASSWORD').type = 'text'
-										document.getElementById('edit').style.display = 'none'
-										document.getElementById('save').style.display = 'inline-block'
-									})
-									document.getElementById('save').addEventListener('click', () => {
-										setTimeout(() => {
-											document.getElementById('EMAIL').disabled = true
-											document.getElementById('PHONE').disabled = true
-											document.getElementById('PASSWORD').disabled = true
-											document.getElementById('PASSWORD').type = 'password'
-											document.getElementById('edit').style.display = 'inline-block'
-											document.getElementById('save').style.display = 'none'
-										}, 0)
-									})
-								</script>
+								<label class="fs_24 SelfStorage_green ms-2" for="account-email">E-mail</label>
+								<input type="email" name="email" id="account-email" class="form-control fs_24 ps-2 SelfStorage__input"
+                       value="{{ request.user.email }}" disabled>
+
+                <div id="account-hidden-fields" hidden>
+                  <label class="fs_24 SelfStorage_green ms-2" for="account-first-name">Имя</label>
+                  <input type="text" name="first_name" id="account-first-name" class="form-control fs_24 ps-2 SelfStorage__input"
+                         value="{{ user.first_name }}">
+                  <label class="fs_24 SelfStorage_green ms-2" for="account-last-name">Фамилия</label>
+                  <input type="text" name="last_name" id="account-last-name" class="form-control fs_24 ps-2 SelfStorage__input"
+                         value="{{ user.last_name }}">
+                </div>
+
+								<label class="fs_24 SelfStorage_green ms-2" for="account-phone">Телефон</label>
+								<input type="tel" name="phone" id="account-phone" class="form-control fs_24 ps-2 SelfStorage__input"
+                       value="{% firstof request.user.phone 'не указан' %}" disabled>
+
+                <div id="account-new-password-container" hidden>
+                  <label class="fs_24 SelfStorage_green ms-2" for="account-new-password1">Новый пароль</label>
+								  <input type="password" name="password1" id="account-new-password1" class="form-control fs_24 ps-2 SelfStorage__input" value="">
+                  <label class="fs_24 SelfStorage_green ms-2" for="account-new-password2">Еще раз новый пароль</label>
+								  <input type="password" name="password2" id="account-new-password2" class="form-control fs_24 ps-2 SelfStorage__input" value="">
+                </div>
+
+                <label id="account-password-old-label" class="fs_24 SelfStorage_green ms-2" for="account-password-old">Пароль</label>
+                <input type="password" name="password_old" id="account-password-old" class="form-control fs_24 ps-2 SelfStorage__input" value="111111111" disabled>
+
+                <button type="submit" class="btn SelfStorage_green ps-1" id="account-save-button" style="display: none">Сохранить</button>
+								<a class="btn SelfStorage_orange ps-1" id="account-edit-button">Редактировать</a>
 							</form>
 						</div>
 					</div>

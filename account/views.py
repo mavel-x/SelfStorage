@@ -26,13 +26,9 @@ class AccountView(TemplateView):
 
     def get(self, request, *args, **kwargs):
         user: User = self.request.user
-        email = user.email
-        phone_number = user.phone
-        name = get_display_name(user)
+        display_name = get_display_name(user)
         return render(request, self.template_name, {
-            'email': email,
-            'phone_number': phone_number,
-            'name': name,
+            'display_name': display_name,
         })
 
 
