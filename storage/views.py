@@ -26,6 +26,7 @@ class BoxesViews(TemplateView):
     def get(self, request):
         context = {
             'storages': Storage.objects.all(),
+            'boxes': Box.objects.filter(is_busy=False),
         }
         return render(request, self.template_name, context)
 
