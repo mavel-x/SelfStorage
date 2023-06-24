@@ -142,7 +142,7 @@ class Box(models.Model):
         verbose_name_plural = 'Боксы'
 
     def __str__(self):
-        return f'Склад {self.storage.pk} - бокс №{self.number}'
+        return f'Склад {self.storage.pk}, бокс {self.number}'
 
 
 class Booking(models.Model):
@@ -166,7 +166,7 @@ class Booking(models.Model):
         verbose_name_plural = 'Аренды'
 
     def __str__(self):
-        return f'{self.user.first_name or self.user.email} - {self.box}'
+        return f'{self.user.first_name or self.user.email}, {self.box}'
 
 
 class Discount(models.Model):
@@ -229,7 +229,7 @@ class Invoice(models.Model):
         verbose_name_plural = 'Счета'
 
     def __str__(self):
-        return f'Счёт {self.booking.box}/{self.amount}руб./{self.pays_until}'
+        return f'{self.booking.user.first_name}: {self.booking.box} до {self.pays_until}'
 
 
 class Lead(models.Model):
