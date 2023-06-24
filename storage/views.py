@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.views.generic import TemplateView, FormView
 from django.urls import reverse_lazy
 
-from .models import Storage, Lead
+from .models import Storage, Box
 from .forms import LeadForm
 
 class IndexView(TemplateView):
@@ -45,3 +45,12 @@ class LeadViews(FormView):
             'status': 'error',
             'errors': form.errors,
         })
+
+
+class OrderView(TemplateView):
+    template_name = 'order.html'
+
+    def get(self, request, *args, **kwargs):
+        #pk = Box.objects.get(pk=kwargs['pk'])
+        print(kwargs['pk'])
+        return render(request, self.template_name)
