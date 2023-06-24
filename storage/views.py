@@ -35,20 +35,12 @@ class LeadViews(FormView):
     success_url = reverse_lazy('index')
 
     def form_valid(self, form):
-        print(form.cleaned_data)
+        form.save()
 
-        Lead.objects.create(
-            email=form.cleaned_data.get('email'),
-            name=form.cleaned_data.get('name'),
-            description=form.cleaned_data.get('description'),
-        )
-
-        return JsonResponse({
-            'status': 'ok',
-        })
+        return JsonResponse({'status': 'ok'})
 
     def form_invalid(self, form):
-        print(form.cleaned_data)
         return JsonResponse({
             'status': 'error',
+            'errors': form.errors,
         })
