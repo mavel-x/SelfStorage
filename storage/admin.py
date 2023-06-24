@@ -71,7 +71,6 @@ class BookingAdmin(admin.ModelAdmin):
     list_display = (
         'user',
         'box',
-        'end_date',
     )
     list_per_page = 20
 
@@ -92,7 +91,6 @@ class InvoiceAdmin(admin.ModelAdmin):
         'amount',
         'pays_until',
         'paid',
-        'is_overdue',
     )
     list_per_page = 20
 

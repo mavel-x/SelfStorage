@@ -142,7 +142,7 @@ class Box(models.Model):
         verbose_name_plural = 'Боксы'
 
     def __str__(self):
-        return f'{self.storage} - бокс №{self.number}'
+        return f'Склад {self.storage.pk}, бокс {self.number}'
 
 
 class Booking(models.Model):
@@ -159,14 +159,14 @@ class Booking(models.Model):
         verbose_name='Бокс',
     )
     start_date = models.DateField('Дата начала аренды', null=True)
-    end_date = models.DateField('Дата окончания аренды', null=True)
+    end_date = models.DateField('Дата окончания аренды', null=True, blank=True)
 
     class Meta:
         verbose_name = 'Аренда'
         verbose_name_plural = 'Аренды'
 
     def __str__(self):
-        return f'{self.box} {self.start_date} - {self.end_date}'
+        return f'{self.user.first_name or self.user.email}, {self.box}'
 
 
 class Discount(models.Model):
@@ -180,7 +180,7 @@ class Discount(models.Model):
         validators=[MinValueValidator(0), MaxValueValidator(100)],
     )
     start_date = models.DateField('Дата начала действия', null=True)
-    end_date = models.DateField('Дата окончания действия', null=True)
+    end_date = models.DateField('Дата окончания действия', null=True, blank=True)
 
     class Meta:
         verbose_name = 'Скидка'
@@ -199,7 +199,7 @@ class Invoice(models.Model):
     )
     pays_until = models.DateField('Оплата до')
     amount = models.PositiveSmallIntegerField(
-        verbose_name='Стоимость аренды',
+        verbose_name='Сумма',
         validators=[MinValueValidator(500)],
     )
     paid = models.BooleanField(
@@ -223,17 +223,13 @@ class Invoice(models.Model):
         related_name='invoices',
         verbose_name='Скидка',
     )
-    is_overdue = models.BooleanField(
-        verbose_name='Просрочен',
-        default=False,
-    )
 
     class Meta:
         verbose_name = 'Счёт'
         verbose_name_plural = 'Счета'
 
     def __str__(self):
-        return f'Счёт {self.booking.box}/{self.amount}руб./{self.pays_until}'
+        return f'{self.booking.user.first_name}: {self.booking.box} до {self.pays_until}'
 
 
 class Lead(models.Model):
