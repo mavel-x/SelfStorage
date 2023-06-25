@@ -7,13 +7,13 @@
             <form id="lead-form" method="post">
                 {% csrf_token %}
                 <div id="lead-error-email" class="fw-bold errorlist"> </div>
-                <input id="lead-form-email" type="email" required class="form-control border-8 mb-4 py-3 px-5 border-0 fs_24 SelfStorage__bg_lightgrey" placeholder="Укажите ваш e-mail">
+                <input id="lead-form-email" name="email" type="email" required class="form-control border-8 mb-4 py-3 px-5 border-0 fs_24 SelfStorage__bg_lightgrey" placeholder="Укажите ваш e-mail">
 
                 <div id="lead-error-name" class="fw-bold errorlist"> </div>
-                <input id="lead-form-name" type="text" class="form-control border-8 mb-4 py-3 px-5 border-0 fs_24 SelfStorage__bg_lightgrey" placeholder="Укажите ваше имя">
+                <input id="lead-form-name" name="name" type="text" class="form-control border-8 mb-4 py-3 px-5 border-0 fs_24 SelfStorage__bg_lightgrey" placeholder="Укажите ваше имя">
 
                 <div id="lead-error-description" class="fw-bold errorlist"> </div>
-                <input id="lead-form-description" type="text" class="form-control border-8 mb-4 py-3 px-5 border-0 fs_24 SelfStorage__bg_lightgrey" placeholder="Укажите что планируете хранить">
+                <input id="lead-form-description" name="description" type="text" class="form-control border-8 mb-4 py-3 px-5 border-0 fs_24 SelfStorage__bg_lightgrey" placeholder="Укажите что планируете хранить">
 
                 <button type="submit"  class="btn border-8 py-3 px-5 w-100 text-white fs_24 SelfStorage__bg_orange SelfStorage__btn2_orange">Рассчитать стоимость</button>
                 <span class="text-center fw-light">Нажимая на кнопку, вы подтверждаете свое <a href="#" class="link-dark">согласие на обработку персональных данных</a></span>

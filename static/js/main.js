@@ -70,11 +70,7 @@ $(document).on('submit', '#lead-form', function (e){
         type: 'POST',
         url: '/lead/',
         headers: {'X-CSRFToken': csrftoken},
-        data: {
-            email: $('#lead-form-email').val(),
-            name: $('#lead-form-name').val(),
-            description: $('#lead-form-description').val(),
-        },
+        data: $(this).serialize(),
         beforeSend: function () {
             buttonLead.text('Заявка обрабатывается');
             buttonLead.attr({
