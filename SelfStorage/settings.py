@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     # custom
     'storage',
     'account',
+    'storage_emails',
 ]
 
 MIDDLEWARE = [

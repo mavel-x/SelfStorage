@@ -150,7 +150,7 @@ class Box(models.Model):
 class UnlockQR(models.Model):
     box = models.OneToOneField(Box, on_delete=models.CASCADE)
     code = models.CharField(max_length=32, db_index=True)
-    expires_at = models.DateTimeField(default=timezone.now)
+    expires_at = models.DateTimeField()
 
     def __str__(self):
         return str(self.box)
@@ -214,11 +214,13 @@ class Booking(models.Model):
             return last_payment.pays_until
 
     def expired(self):
-        return self.paid_until() is None or self.paid_until() < timezone.now().date()
+        if self.paid_until() is None:
+            return self.start_date + timezone.timedelta(days=1) < timezone.localdate()
+        return self.paid_until() < timezone.localdate()
 
     def expires_soon(self):
         if paid_until := self.paid_until():
-            till_expiration = paid_until - timezone.now().date()
+            till_expiration = paid_until - timezone.localdate()
             return timezone.timedelta(0) < till_expiration <= timezone.timedelta(days=7)
 
     def liquidate_on(self):
