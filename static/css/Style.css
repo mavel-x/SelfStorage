@@ -197,3 +197,7 @@ body {
     margin-bottom: 0;
     padding-left: 0;
 }
+.booking-center {
+  display: flex;
+  justify-content: center;
+}

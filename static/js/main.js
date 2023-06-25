@@ -91,8 +91,6 @@ $(document).on('submit', '#lead-form', function (e){
                 buttonLead.addClass('SelfStorage__bg_green SelfStorage__btn2_green')
             }
             else if (data.status === 'error') {
-                $('#lead-error').text('Форма заполнена не верно!');
-
                 for (let field in data.errors) {
                     let errorList = $('<ul class="errorlist">');
                     for (let error of data.errors[field]) {
@@ -110,3 +108,30 @@ $(document).on('submit', '#lead-form', function (e){
     })
 })
 
+
+$(document).on('submit', '#booking-form', function (e){
+    e.preventDefault();
+    let csrftoken = Cookies.get('csrftoken');
+    let buttonLead = $('#lead-form button ')
+    $.ajax({
+        type: 'POST',
+        url: '/payment/',
+        headers: {'X-CSRFToken': csrftoken},
+        data: $(this).serialize(),
+        success: function (data) {
+            if (data.status === 'ok') {
+                $('[id|=lead-error]').text('');
+            }
+            else if (data.status === 'error') {
+                for (let field in data.errors) {
+                    let errorList = $('<ul class="errorlist">');
+                    for (let error of data.errors[field]) {
+                        errorList.append($('<li>').text(error));
+                    }
+
+                    $('#booking-error-' + field).html(errorList);
+                }
+            }
+        }
+    })
+})

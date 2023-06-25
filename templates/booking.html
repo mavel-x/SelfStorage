@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block main %}
+<main class="container mt-header booking-center">
+
+    <article class="row booking-center">
+        <h1 class="fw-bold SelfStorage_green mb-5 booking-center">Оформление аренды бокса №{{ box.number }}</h1>
+        <h4 class="fw-lighter SelfStorage_grey mb-5 booking-center">Адрес склада: {{ box.storage }}</h4>
+
+        <div class="col-12 col-lg-6 mb-3 mb-lg-0 booking-center">
+            <form id="payment-form" method="post">
+                {% csrf_token %}
+                <div id="payment-error-email" class="fw-bold errorlist"></div>
+                <input id="payment-form-email" name="email" type="email" required class="form-control border-8 mb-4 py-3 px-5 border-0 fs_24 SelfStorage__bg_lightgrey" placeholder="Укажите ваш e-mail">
+
+                <div id="payment-error-start_date" class="fw-bold errorlist"></div>
+                <input id="payment-form-start_date" name="start_date" type="date" name="calendar" value="{{ start_date }}" min="{{ start_date }}" max="{{ max_start_date }}" class="form-control border-8 mb-4 py-3 px-5 border-0 fs_24 SelfStorage__bg_lightgrey" placeholder="Укажите дату начала аренды">
+
+                <div id="payment-error-end_date" class="fw-bold errorlist"></div>
+                <input id="payment-form-end_date" name="end_date" type="date" name="calendar" value="{{ end_date }}" min="{{ max_start_date }}" class="form-control border-8 mb-4 py-3 px-5 border-0 fs_24 SelfStorage__bg_lightgrey" placeholder="Укажите дату окончания аренды">
+
+                 <div id="payment-error-promocode" class="fw-bold errorlist"></div>
+                <input id="payment-form-promocode" name="promocode" type="text" class="form-control border-8 mb-4 py-3 px-5 border-0 fs_24 SelfStorage__bg_lightgrey SelfStorage_black" placeholder="Укажите промокод">
+
+                <button id="payment-form-button" type="submit"  class="btn border-8 py-3 px-5 w-100 text-white fs_24 SelfStorage__bg_orange SelfStorage__btn2_orange">Оплатить {{ box_amount }} ₽</button>
+            </form>
+        </div>
+
+    </article>
+</main>
+
+{% endblock %}
