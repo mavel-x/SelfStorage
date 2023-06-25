@@ -1,3 +1,7 @@
+import random
+import string
+
+from django.core.exceptions import ValidationError
 from django.core.validators import (
     MaxValueValidator,
     MinValueValidator,
@@ -143,6 +147,33 @@ class Box(models.Model):
         return f'Склад {self.storage.pk}, бокс {self.number}'
 
 
+class UnlockQR(models.Model):
+    box = models.OneToOneField(Box, on_delete=models.CASCADE)
+    code = models.CharField(max_length=32, db_index=True)
+    expires_at = models.DateTimeField()
+
+    def __str__(self):
+        return str(self.box)
+
+    @classmethod
+    def create_for_box(cls, box):
+        code = ''.join(random.choices(string.ascii_lowercase + string.digits, k=32))
+        expires_at = timezone.localdate() + timezone.timedelta(days=7)
+        unlock_qr, created = cls.objects.update_or_create(
+            box=box,
+            defaults={'code': code, 'expires_at': expires_at}
+        )
+        return unlock_qr
+
+    @classmethod
+    def check_code(cls, box, code):
+        unlock_qr = cls.objects.get(box=box, code=code)
+        unlock_qr.delete()
+        if unlock_qr.expires_at <= timezone.now():
+            raise ValidationError('Expired code')
+        print('OK')
+
+
 class BookingQuerySet(models.QuerySet):
     def active(self):
         return self.filter(terminated=False)
@@ -183,11 +214,13 @@ class Booking(models.Model):
             return last_payment.pays_until
 
     def expired(self):
-        return self.paid_until() is None or self.paid_until() < timezone.now().date()
+        if self.paid_until() is None:
+            return self.start_date + timezone.timedelta(days=1) < timezone.localdate()
+        return self.paid_until() < timezone.localdate()
 
     def expires_soon(self):
         if paid_until := self.paid_until():
-            till_expiration = paid_until - timezone.now().date()
+            till_expiration = paid_until - timezone.localdate()
             return timezone.timedelta(0) < till_expiration <= timezone.timedelta(days=7)
 
     def liquidate_on(self):
