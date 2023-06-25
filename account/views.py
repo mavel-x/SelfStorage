@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
@@ -10,34 +11,22 @@ from .models import User
 from .forms import LoginForm, SignUpForm, AccountChangeForm
 
 
-def get_display_name(user: User):
-    if user.first_name and user.last_name:
-        return ' '.join((user.first_name, user.last_name))
-    if name := (user.first_name or user.last_name):
-        return name
-    if user.username:
-        return user.username
-    return user.email
-
-
-class AccountView(TemplateView):
+class AccountView(LoginRequiredMixin, TemplateView):
+    login_url = reverse_lazy('index')
     template_name = 'my-rent.html'
 
     def get(self, request, *args, **kwargs):
         user: User = self.request.user
-        display_name = get_display_name(user)
-
-        bookings = Booking.objects.filter(user=user).prefetch_related('box', 'box__storage')
-
-
+        bookings = Booking.objects.filter(user=user, terminated=False).prefetch_related('box', 'box__storage')
 
         return render(request, self.template_name, {
-            'display_name': display_name,
             'bookings': bookings,
         })
 
 
-class AccountChangeView(FormView):
+class AccountChangeView(LoginRequiredMixin, FormView):
+    login_url = reverse_lazy('index')
+
     form_class = AccountChangeForm
     template_name = 'my-rent.html'
     success_url = reverse_lazy('account')

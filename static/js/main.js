@@ -1,4 +1,5 @@
 $(document).on('submit', '#login-form', function (e){
+
     e.preventDefault();
     let csrftoken = Cookies.get('csrftoken');
     $.ajax({
@@ -14,7 +15,12 @@ $(document).on('submit', '#login-form', function (e){
                 $('#login-form-errors').html(data.errors);
             }
             else if (data.status === 'ok') {
-                location.reload();
+                let urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.has('next')) {
+                    window.location.href = urlParams.get('next');
+                } else {
+                    location.reload();
+                }
             }
         }
     })
@@ -45,7 +51,12 @@ $(document).on('submit', '#signup-form', function (e){
                 }
             }
             else if (data.status === 'ok') {
-                location.reload();
+                let urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.has('next')) {
+                    window.location.href = urlParams.get('next');
+                } else {
+                    location.reload();
+                }
             }
         }
     })
