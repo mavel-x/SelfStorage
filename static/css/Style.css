@@ -30,11 +30,20 @@ body {
     color: #F28A4F!important;
     border-color: #F28A4F!important;
 }
-
+.SelfStorage__btn2_orange[disabled='disabled'] {
+    background-color: white!important;
+    color: #e7570d !important;
+    border-color: #e7570d !important;
+}
 .SelfStorage__btn2_green:hover {
     background-color: white!important;
     color: #579586!important;
     border-color: #579586!important;
+}
+.SelfStorage__btn2_green[disabled='disabled'] {
+    background-color: #045745!important;
+    color: white!important;
+    border-color: #045742!important;
 }
 .SelfStorage__btn_orange:hover {
     background-color: #F28A4F!important;
@@ -126,6 +135,9 @@ body {
 }
 .SelfStorage_grey {
     color: #89939E !important;
+}
+.SelfStorage_red {
+    color: #e70101 !important;
 }
 .SelfStorage__bg_grey {
     background-color: #89939E !important;

@@ -54,27 +54,50 @@ $(document).on('submit', '#signup-form', function (e){
 $(document).on('submit', '#lead-form', function (e){
     e.preventDefault();
     let csrftoken = Cookies.get('csrftoken');
+    let buttonLead = $('#lead-form button ')
     $.ajax({
         type: 'POST',
-        url: 'lead/',
+        url: '/lead/',
         headers: {'X-CSRFToken': csrftoken},
         data: {
             email: $('#lead-form-email').val(),
             name: $('#lead-form-name').val(),
             description: $('#lead-form-description').val(),
         },
+        beforeSend: function () {
+            buttonLead.text('Заявка обрабатывается');
+            buttonLead.attr({
+                'type': 'button',
+                'disabled':'disabled',
+            });
+        },
         success: function (data) {
-            if (data.status === 'error') {
+            if (data.status === 'ok') {
+                $('[id|=lead-error]').text('');
+
+                buttonLead.text('Заявка принята');
+                buttonLead.attr({
+                    'type': 'button',
+                    'disabled':'disabled',
+                });
+                buttonLead.removeClass('SelfStorage__bg_orange SelfStorage__btn2_orange')
+                buttonLead.addClass('SelfStorage__bg_green SelfStorage__btn2_green')
+            }
+            else if (data.status === 'error') {
+                $('#lead-error').text('Форма заполнена не верно!');
+
                 for (let field in data.errors) {
                     let errorList = $('<ul class="errorlist">');
                     for (let error of data.errors[field]) {
                         errorList.append($('<li>').text(error));
                     }
-                    $('#error_' + field).html(errorList);
+
+                    $('#lead-error-' + field).html(errorList);
+
+                buttonLead.text('Рассчитать стоимость');
+                buttonLead.attr('type','submit');
+                buttonLead.removeAttr('disabled')
                 }
-            }
-            else if (data.status === 'ok') {
-                location.reload();
             }
         }
     })

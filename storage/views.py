@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.views.generic import TemplateView, FormView
 from django.urls import reverse_lazy
 
-from .models import Storage, Lead
+from .models import Storage, Box
 from .forms import LeadForm
 
 class IndexView(TemplateView):
@@ -26,6 +26,7 @@ class BoxesViews(TemplateView):
     def get(self, request):
         context = {
             'storages': Storage.objects.all(),
+            'boxes': Box.objects.filter(is_busy=False),
         }
         return render(request, self.template_name, context)
 
@@ -35,20 +36,21 @@ class LeadViews(FormView):
     success_url = reverse_lazy('index')
 
     def form_valid(self, form):
-        print(form.cleaned_data)
+        form.save()
 
-        Lead.objects.create(
-            email=form.cleaned_data.get('email'),
-            name=form.cleaned_data.get('name'),
-            description=form.cleaned_data.get('description'),
-        )
-
-        return JsonResponse({
-            'status': 'ok',
-        })
+        return JsonResponse({'status': 'ok'})
 
     def form_invalid(self, form):
-        print(form.cleaned_data)
         return JsonResponse({
             'status': 'error',
+            'errors': form.errors,
         })
+
+
+class OrderView(TemplateView):
+    template_name = 'order.html'
+
+    def get(self, request, *args, **kwargs):
+        #pk = Box.objects.get(pk=kwargs['pk'])
+        print(kwargs['pk'])
+        return render(request, self.template_name)

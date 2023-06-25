@@ -9,6 +9,7 @@ urlpatterns = [
     path('faq/', views.FAQView.as_view(), name='faq'),
     path('boxes/', views.BoxesViews.as_view(), name='boxes'),
     path('lead/', views.LeadViews.as_view(), name='lead'),
+    path('order/<pk>/', views.OrderView.as_view(), name='order'),
 
     *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
 ]
