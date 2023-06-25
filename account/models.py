@@ -19,6 +19,16 @@ class User(AbstractUser):
         ],
     )
 
+    @property
+    def display_name(self):
+        if self.first_name and self.last_name:
+            return ' '.join((self.first_name, self.last_name))
+        if name := (self.first_name or self.last_name):
+            return name
+        if self.username:
+            return self.username
+        return self.email
+
 
 @receiver(pre_delete, sender=User)
 def delete_photo(sender, instance, **kwargs):
