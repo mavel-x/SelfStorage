@@ -31,7 +31,7 @@ def unlock_box(request):
     booking = get_object_or_404(Booking, user=user, box=box)
     code = UnlockQR.create_for_box(box)
     title = 'Одноразовый QR-код для открытия бокса'
-    body = render_to_string('emails/qr_open.html', {
+    body = render_to_string('qr_open.html', {
         'title': title,
         'customer_name': user.first_name,
         'box': box,
