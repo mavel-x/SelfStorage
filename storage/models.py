@@ -160,6 +160,7 @@ class Booking(models.Model):
     )
     start_date = models.DateField('Дата начала аренды', null=True)
     end_date = models.DateField('Дата окончания аренды', null=True, blank=True)
+    terminated = models.BooleanField('вещи вывезены', default=False)
 
     class Meta:
         verbose_name = 'Аренда'
