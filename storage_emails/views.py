@@ -1,25 +1,11 @@
-from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.core import mail
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.views.decorators.http import require_POST
 
 from storage.models import Box, UnlockQR, Booking
-
-
-def send_html_email(subject: str, body: str, email_to: str):
-    with mail.get_connection() as connection:
-        email = mail.EmailMessage(
-            subject=subject,
-            body=body,
-            from_email=settings.EMAIL_SEND_FROM,
-            to=[email_to],
-            connection=connection,
-        )
-        email.content_subtype = 'html'
-        email.send()
+from storage_emails.utils import send_html_email
 
 
 @require_POST
