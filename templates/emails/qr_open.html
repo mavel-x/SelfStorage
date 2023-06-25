@@ -10,11 +10,12 @@
 
   <p>
     Обратите внимание: код перестанет действовать после одного использования, либо через одну неделю.
+    Предыдущие коды, выпущенные для этого бокса, теперь не работают.
   </p>
 
-  <p>
-    Номер бокса: {{ box_number }}
-  </p>
+  <h4 class="SelfStorage_green">Мой склад № {{ box.storage.id }}</h4>
+  <p>{{ box.storage.address }}</p>
+  <h4 class="SelfStorage_green">Бокс №{{ box.number }}</h4>
 
   <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ box_open_code }}"
        alt="QR-код для открытия складского бокса">

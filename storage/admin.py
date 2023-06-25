@@ -9,6 +9,7 @@ from storage.models import (
     Discount,
     Invoice,
     Lead,
+    UnlockQR,
 )
 
 
@@ -103,3 +104,8 @@ class LeadAdmin(admin.ModelAdmin):
         'date',
     )
     list_per_page = 20
+
+
+@admin.register(UnlockQR)
+class UnlockQRAdmin(admin.ModelAdmin):
+    pass

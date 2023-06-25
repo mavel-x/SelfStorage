@@ -152,19 +152,23 @@ class UnlockQR(models.Model):
     code = models.CharField(max_length=32, db_index=True)
     expires_at = models.DateTimeField(default=timezone.now)
 
+    def __str__(self):
+        return str(self.box)
+
     @classmethod
     def create_for_box(cls, box):
         code = ''.join(random.choices(string.ascii_lowercase + string.digits, k=32))
-        expires_at = timezone.now().date() + timezone.timedelta(days=7)
-        unlock_qr = cls(box=box, code=code, expires_at=expires_at)
-        unlock_qr.save()
+        expires_at = timezone.localdate() + timezone.timedelta(days=7)
+        unlock_qr, created = cls.objects.update_or_create(
+            box=box,
+            defaults={'code': code, 'expires_at': expires_at}
+        )
         return unlock_qr
 
     @classmethod
     def check_code(cls, box, code):
         unlock_qr = cls.objects.get(box=box, code=code)
-        unlock_qr.box = None
-        unlock_qr.save()
+        unlock_qr.delete()
         if unlock_qr.expires_at <= timezone.now():
             raise ValidationError('Expired code')
         print('OK')
