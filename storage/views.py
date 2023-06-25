@@ -79,16 +79,38 @@ class PaymentFormViews(FormView):
     success_url = reverse_lazy('index')
 
     def form_valid(self, form):
-        print(form.cleaned_data)
+        if self.request.POST.get('change', '') == 'date':
+            box_amount = self.change_date(form)
+
+            return JsonResponse({
+                'box_amount': box_amount,
+            })
 
         #form.save()
 
         return JsonResponse({'status': 'ok'})
 
     def form_invalid(self, form):
-        print(form.cleaned_data)
+        if self.request.POST.get('change', '') == 'date':
+            box_amount = self.change_date(form)
+
+            return JsonResponse({
+                'box_amount': box_amount,
+            })
 
         return JsonResponse({
             'status': 'error',
             'errors': form.errors,
         })
+
+    def change_date(self, form):
+        box = Box.objects.get(pk=self.request.POST['box'])
+        start_date = form.cleaned_data['start_date']
+        end_date = form.cleaned_data['end_date']
+        months_difference = relativedelta(end_date, start_date)
+        months_count = (months_difference.years * 12) + months_difference.months
+        if start_date.day != end_date.day:
+            months_count += 1
+        box_amount = box.price * months_count
+
+        return box_amount

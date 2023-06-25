@@ -108,11 +108,10 @@ $(document).on('submit', '#lead-form', function (e){
     })
 })
 
-
-$(document).on('submit', '#booking-form', function (e){
+$(document).on('submit', '#payment-form', function (e){
     e.preventDefault();
     let csrftoken = Cookies.get('csrftoken');
-    let buttonLead = $('#lead-form button ')
+    let buttonPayment = $('#payment-form button ')
     $.ajax({
         type: 'POST',
         url: '/payment/',
@@ -120,7 +119,7 @@ $(document).on('submit', '#booking-form', function (e){
         data: $(this).serialize(),
         success: function (data) {
             if (data.status === 'ok') {
-                $('[id|=lead-error]').text('');
+                $('[id|=payment-error]').text('');
             }
             else if (data.status === 'error') {
                 for (let field in data.errors) {
@@ -129,9 +128,52 @@ $(document).on('submit', '#booking-form', function (e){
                         errorList.append($('<li>').text(error));
                     }
 
-                    $('#booking-error-' + field).html(errorList);
+                    $('#payment-error-' + field).html(errorList);
                 }
             }
         }
     })
 })
+
+
+$('#payment-form-start_date').change(function(e){
+    e.preventDefault();
+    let csrftoken = Cookies.get('csrftoken');
+    let buttonPayment = $('#payment-form button ')
+
+    $.ajax({
+        type: 'POST',
+        url: '/payment/',
+        headers: {'X-CSRFToken': csrftoken},
+        data: {
+            change: 'date',
+            box: $('#payment-form-box').val(),
+            start_date: $('#payment-form-start_date').val(),
+            end_date: $('#payment-form-end_date').val(),
+        },
+        success: function(data){
+            buttonPayment.text('Оплатить ' + data.box_amount + ' ₽');
+        }
+    })
+});
+
+$('#payment-form-end_date').change(function(e){
+    e.preventDefault();
+    let csrftoken = Cookies.get('csrftoken');
+    let buttonPayment = $('#payment-form button ')
+
+    $.ajax({
+        type: 'POST',
+        url: '/payment/',
+        headers: {'X-CSRFToken': csrftoken},
+        data: {
+            change: 'date',
+            box: $('#payment-form-box').val(),
+            start_date: $('#payment-form-start_date').val(),
+            end_date: $('#payment-form-end_date').val(),
+        },
+        success: function(data){
+            buttonPayment.text('Оплатить ' + data.box_amount + ' ₽');
+        }
+    })
+});
