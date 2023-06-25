@@ -1,5 +1,3 @@
-import datetime
-
 from django.core.validators import (
     MaxValueValidator,
     MinValueValidator,
@@ -145,6 +143,14 @@ class Box(models.Model):
         return f'Склад {self.storage.pk}, бокс {self.number}'
 
 
+class BookingQuerySet(models.QuerySet):
+    def active(self):
+        return self.filter(terminated=False)
+
+    def past(self):
+        return self.filter(terminated=True)
+
+
 class Booking(models.Model):
     user = models.ForeignKey(
         User,
@@ -160,13 +166,35 @@ class Booking(models.Model):
     )
     start_date = models.DateField('Дата начала аренды', null=True)
     end_date = models.DateField('Дата окончания аренды', null=True, blank=True)
+    terminated = models.BooleanField('вещи вывезены', default=False)
+
+    objects = BookingQuerySet.as_manager()
 
     class Meta:
         verbose_name = 'Аренда'
         verbose_name_plural = 'Аренды'
 
     def __str__(self):
-        return f'{self.user.first_name or self.user.email}, {self.box}'
+        return f'{self.user.display_name}, {self.box}'
+
+    def paid_until(self):
+        last_payment = Invoice.objects.filter(booking=self, paid=True).last()
+        if last_payment:
+            return last_payment.pays_until
+
+    def expired(self):
+        return self.paid_until() is None or self.paid_until() < timezone.now().date()
+
+    def expires_soon(self):
+        if paid_until := self.paid_until():
+            till_expiration = paid_until - timezone.now().date()
+            return timezone.timedelta(0) < till_expiration <= timezone.timedelta(days=7)
+
+    def liquidate_on(self):
+        if paid_until := self.paid_until():
+            return paid_until + timezone.timedelta(weeks=26)
+        else:
+            return self.start_date + timezone.timedelta(weeks=26)
 
 
 class Discount(models.Model):
@@ -229,7 +257,7 @@ class Invoice(models.Model):
         verbose_name_plural = 'Счета'
 
     def __str__(self):
-        return f'{self.booking.user.first_name}: {self.booking.box} до {self.pays_until}'
+        return f'{self.booking.user.display_name}: {self.booking.box} до {self.pays_until}'
 
 
 class Lead(models.Model):
