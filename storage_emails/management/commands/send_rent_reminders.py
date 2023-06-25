@@ -23,7 +23,7 @@ def reminder_due(invoice: Invoice):
 
 
 def find_expiring_booking_invoices() -> dict[User, list[Invoice]]:
-    active_bookings = Booking.objects.filter(terminated=False)
+    active_bookings = Booking.objects.active()
     invoices = Invoice.objects.filter(booking__in=active_bookings)
     paid_invoices = invoices.filter(paid=True)
 
