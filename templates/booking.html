@@ -3,7 +3,11 @@
 {% block main %}
 <main class="container mt-header booking-center">
     <article class="row booking-center">
+        {% if is_extension %}
+        <h1 class="fw-bold SelfStorage_green mb-5 booking-center">Продление аренды бокса №{{ box.number }}</h1>
+        {% else %}
         <h1 class="fw-bold SelfStorage_green mb-5 booking-center">Оформление аренды бокса №{{ box.number }}</h1>
+        {% endif %}
         <h4 class="fw-lighter SelfStorage_grey mb-5 booking-center">Адрес склада: {{ box.storage }}</h4>
 
         <div class="col-12 col-lg-6 mb-3 mb-lg-0 booking-center">
@@ -12,14 +16,19 @@
                 <input id="payment-form-box" name="box" type="text" value="{{ box.id }}" required hidden>
 
                 {% if email %}
-                    <input id="payment-form-email" name="email" type="email" value="{{ email }}" required hidden>
+                <input id="payment-form-email" name="email" type="email" value="{{ email }}" required hidden>
                 {% else %}
-                    <div id="payment-error-email" class="fw-bold errorlist"></div>
-                    <input id="payment-form-email" name="email" type="email" class="form-control border-8 mb-4 py-3 px-5 border-0 fs_24 SelfStorage__bg_lightgrey" placeholder="Укажите ваш e-mail" required >
+                <div id="payment-error-email" class="fw-bold errorlist"></div>
+                <input id="payment-form-email" name="email" type="email" class="form-control border-8 mb-4 py-3 px-5 border-0 fs_24 SelfStorage__bg_lightgrey" placeholder="Укажите ваш e-mail" required >
                 {% endif %}
 
+                {% if is_extension %}
+                <input id="payment-form-extension" name="is_extension" type="checkbox" checked hidden>
+                <input id="payment-form-start_date" name="start_date" type="date" name="calendar" value="{{ start_date }}" min="{{ start_date }}" max="{{ max_start_date }}" class="form-control border-8 mb-4 py-3 px-5 border-0 fs_24 SelfStorage__bg_lightgrey" placeholder="Укажите дату начала аренды" required hidden>
+                {% else %}
                 <div id="payment-error-start_date" class="fw-bold errorlist"></div>
                 <input id="payment-form-start_date" name="start_date" type="date" name="calendar" value="{{ start_date }}" min="{{ start_date }}" max="{{ max_start_date }}" class="form-control border-8 mb-4 py-3 px-5 border-0 fs_24 SelfStorage__bg_lightgrey" placeholder="Укажите дату начала аренды" required>
+                {% endif %}
 
                 <div id="payment-error-end_date" class="fw-bold errorlist"></div>
                 <input id="payment-form-end_date" name="end_date" type="date" name="calendar" value="{{ end_date }}" min="{{ max_start_date }}" class="form-control border-8 mb-4 py-3 px-5 border-0 fs_24 SelfStorage__bg_lightgrey" placeholder="Укажите дату окончания аренды" required>
