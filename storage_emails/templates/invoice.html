@@ -15,7 +15,13 @@
   </style>
 
   <div class="invoice">
+    {% if password %}
+    <p>Спасибо что вочпользовались нашим сервисом!</p>
+    <p><a href="{{ url }}">Ваш пароль от личного кабинета:</a> {{ password }}</p>
+    {% else %}
     <p>Клиент: {{ user.display_name }}</p>
+    <p><a href="{{ url }}">Посмотреть аренды в личном кабинете.</a> {{ password }}</p>
+    {% endif %}
     <p>Срок аренды: до {{ invoice.pays_until|date }}</p>
     <table>
         <tr>

@@ -259,7 +259,7 @@ class Invoice(models.Model):
         verbose_name='Аренда',
     )
     pays_until = models.DateField('Оплата до')
-    amount = models.PositiveSmallIntegerField(
+    amount = models.PositiveIntegerField(
         verbose_name='Сумма',
         validators=[MinValueValidator(500)],
     )

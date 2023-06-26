@@ -28,11 +28,13 @@ def unlock_box(request):
     return JsonResponse({'status': 'ok'})
 
 
-def send_invoice(user: User, invoice: Invoice):
+def send_invoice(user: User, invoice: Invoice, password: str = '', url: str = ''):
     title = 'Счет за аренду складского бокса'
     body = render_to_string('invoice.html', {
         'title': title,
         'user': user,
         'invoice': invoice,
+        'password': password,
+        'url': url,
     })
     send_html_email(title, body, user.email)

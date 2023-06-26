@@ -1,6 +1,6 @@
 import datetime
-import secrets
-import string
+
+from pathlib import Path
 
 from dateutil.relativedelta import relativedelta
 from django.http import JsonResponse
@@ -74,6 +74,7 @@ class BookingView(TemplateView):
         end_date = start_date + relativedelta(months=default_months_count)
         max_start_date = start_date + relativedelta(months=min_months_count)
         data_format ='%Y-%m-%d'
+
         context = {
             'box': box,
             'box_amount': box_amount,
@@ -81,6 +82,11 @@ class BookingView(TemplateView):
             'end_date': end_date.strftime(data_format),
             'max_start_date': max_start_date.strftime(data_format),
         }
+
+        if self.request.user.id:
+            context['email'] = self.request.user.email
+        else:
+            context['email'] = ''
 
         return render(request, self.template_name, context)
 
@@ -92,36 +98,32 @@ class PaymentFormViews(FormView):
     def form_valid(self, form):
         box = Box.objects.get(pk=self.request.POST['box'])
         promocode = form.cleaned_data['promocode']
-
-        if Discount.objects.filter(
-                promocode__iexact=promocode,
-                start_date__lte=datetime.datetime.today(),
-                end_date__gte=datetime.datetime.today(),
-        ).exists():
-            discount = Discount.objects.get(promocode__iexact=promocode)
-        else:
-            discount = None
-
         box_amount = self.calculate_amount(form, box.price)
+        user_password = ''
 
         if self.request.POST.get('change', ''):
             return JsonResponse({
                 'box_amount': box_amount,
             })
 
-        user, created = User.objects.get_or_create(
-            email=form.cleaned_data['email'],
-        )
+        if Discount.objects.filter(
+            promocode__iexact=promocode,
+            start_date__lte=datetime.datetime.today(),
+            end_date__gte=datetime.datetime.today(),
+        ).exists():
+            discount = Discount.objects.get(promocode__iexact=promocode)
+        else:
+            discount = None
+
+        user, created = User.objects.get_or_create(email=form.cleaned_data['email'])
 
         if created:
-            alphabet = string.ascii_letters + string.digits
-            password_len = 20
-            user.password = ''.join(secrets.choice(alphabet) for i in range(password_len))
+            user_password = User.objects.make_random_password()
+            user.set_password(user_password)
             user.username = f'{user.email.split("@")[0]}_id{user.id}'
             user.save()
 
-        box.is_busy = True
-        box.save()
+
 
         booking = Booking.objects.create(
             user=user,
@@ -135,9 +137,15 @@ class PaymentFormViews(FormView):
             pays_until=datetime.datetime.today() + datetime.timedelta(days=3),
             amount=box_amount,
             discount=discount,
+            paid=True,
         )
 
-        send_invoice(user, invoice)
+        box.is_busy = True
+        box.save()
+
+        domain = Path(self.request.build_absolute_uri())
+
+        send_invoice(user, invoice, user_password, domain.parent)
 
         return JsonResponse({'status': 'ok'})
 
