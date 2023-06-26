@@ -1,7 +1,7 @@
 document.getElementById('account-edit-button').addEventListener('click', e => {
     e.preventDefault()
-    // document.getElementById('account-email').disabled = false
     let phoneField = document.getElementById('account-phone')
+    phoneInitialValue = phoneField.value;
     phoneField.disabled = false
     if (phoneField.value === 'не указан') {
         phoneField.value = '';
@@ -9,6 +9,7 @@ document.getElementById('account-edit-button').addEventListener('click', e => {
     document.getElementById('account-password-old').disabled = false
     document.getElementById('account-edit-button').style.display = 'none'
     document.getElementById('account-save-button').style.display = 'inline-block'
+    document.getElementById('account-cancel-edit-button').style.display = 'inline-block'
     document.getElementById('account-hidden-fields').hidden = false
     document.getElementById('account-new-password-container').hidden = false
     document.getElementById('account-password-old-label').innerText = 'Старый пароль'
@@ -67,4 +68,12 @@ $(document).on('submit', '#account-change-form', function (e) {
             }
         }
     })
+})
+
+document.getElementById('account-cancel-edit-button').addEventListener('click', e => {
+    let phoneField = document.getElementById('account-phone')
+    phoneField.value = phoneInitialValue;
+    $('#account-phone').prop('disabled', true);
+    $('#account-password-old').prop('disabled', true);
+    location.reload();
 })
