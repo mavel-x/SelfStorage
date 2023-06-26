@@ -94,12 +94,12 @@ if DEBUG:
     }
 else:
     DEFAULT_DATABASE = {
-        'ENGINE': env.str('DB_ENGINE'),
+        'ENGINE': env.str('DB_ENGINE', 'django.db.backends.postgresql'),
         'NAME': env.str('DB_NAME'),
         'USER': env.str('DB_USER'),
         'PASSWORD': env.str('DB_PASSWORD'),
-        'HOST': env.str('DB_HOST'),
-        'PORT': env.str('DB_PORT'),
+        'HOST': env.str('DB_HOST', '127.0.0.1'),
+        'PORT': env.str('DB_PORT', '5432'),
     }
 
 DATABASES = {'default': DEFAULT_DATABASE}
