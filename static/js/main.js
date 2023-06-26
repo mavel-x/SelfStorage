@@ -120,6 +120,13 @@ $(document).on('submit', '#payment-form', function (e){
         success: function (data) {
             if (data.status === 'ok') {
                 $('[id|=payment-error]').text('');
+                buttonPayment.attr({
+                    'type': 'button',
+                    'disabled':'disabled',
+                });
+                buttonPayment.removeClass('SelfStorage__bg_orange SelfStorage__btn2_orange')
+                buttonPayment.addClass('SelfStorage__bg_green SelfStorage__btn2_green')
+                buttonPayment.text('Оплачено!');
             }
             else if (data.status === 'error') {
                 for (let field in data.errors) {
@@ -146,10 +153,12 @@ $('#payment-form-start_date').change(function(e){
         url: '/payment/',
         headers: {'X-CSRFToken': csrftoken},
         data: {
-            change: 'date',
+            change: true,
             box: $('#payment-form-box').val(),
+            email: $('#payment-form-email').val(),
             start_date: $('#payment-form-start_date').val(),
             end_date: $('#payment-form-end_date').val(),
+            promocode: $('#payment-form-promocode').val(),
         },
         success: function(data){
             buttonPayment.text('Оплатить ' + data.box_amount + ' ₽');
@@ -167,10 +176,36 @@ $('#payment-form-end_date').change(function(e){
         url: '/payment/',
         headers: {'X-CSRFToken': csrftoken},
         data: {
-            change: 'date',
+            change: true,
             box: $('#payment-form-box').val(),
+            email: $('#payment-form-email').val(),
             start_date: $('#payment-form-start_date').val(),
             end_date: $('#payment-form-end_date').val(),
+            promocode: $('#payment-form-promocode').val(),
+        },
+        success: function(data){
+            buttonPayment.text('Оплатить ' + data.box_amount + ' ₽');
+        }
+    })
+});
+
+
+$('#payment-form-promocode').change(function(e){
+    e.preventDefault();
+    let csrftoken = Cookies.get('csrftoken');
+    let buttonPayment = $('#payment-form button ')
+
+    $.ajax({
+        type: 'POST',
+        url: '/payment/',
+        headers: {'X-CSRFToken': csrftoken},
+        data: {
+            change: true,
+            box: $('#payment-form-box').val(),
+            email: $('#payment-form-email').val(),
+            start_date: $('#payment-form-start_date').val(),
+            end_date: $('#payment-form-end_date').val(),
+            promocode: $('#payment-form-promocode').val(),
         },
         success: function(data){
             buttonPayment.text('Оплатить ' + data.box_amount + ' ₽');

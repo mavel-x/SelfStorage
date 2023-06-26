@@ -1,4 +1,6 @@
 import datetime
+import secrets
+import string
 
 from dateutil.relativedelta import relativedelta
 from django.http import JsonResponse
@@ -6,8 +8,17 @@ from django.shortcuts import render
 from django.views.generic import TemplateView, FormView
 from django.urls import reverse_lazy
 
-from .models import Storage, Box
+
+from .models import (
+    Booking,
+    Box,
+    Discount,
+    Invoice,
+    Storage,
+)
 from .forms import PaymentForm, LeadForm
+from account.models import User
+from storage_emails.views import send_invoice
 
 class IndexView(TemplateView):
     template_name = 'index.html'
@@ -79,20 +90,61 @@ class PaymentFormViews(FormView):
     success_url = reverse_lazy('index')
 
     def form_valid(self, form):
-        if self.request.POST.get('change', '') == 'date':
-            box_amount = self.change_date(form)
+        box = Box.objects.get(pk=self.request.POST['box'])
+        promocode = form.cleaned_data['promocode']
 
+        if Discount.objects.filter(
+                promocode__iexact=promocode,
+                start_date__lte=datetime.datetime.today(),
+                end_date__gte=datetime.datetime.today(),
+        ).exists():
+            discount = Discount.objects.get(promocode__iexact=promocode)
+        else:
+            discount = None
+
+        box_amount = self.calculate_amount(form, box.price)
+
+        if self.request.POST.get('change', ''):
             return JsonResponse({
                 'box_amount': box_amount,
             })
 
-        #form.save()
+        user, created = User.objects.get_or_create(
+            email=form.cleaned_data['email'],
+        )
+
+        if created:
+            alphabet = string.ascii_letters + string.digits
+            password_len = 20
+            user.password = ''.join(secrets.choice(alphabet) for i in range(password_len))
+            user.username = f'{user.email.split("@")[0]}_id{user.id}'
+            user.save()
+
+        box.is_busy = True
+        box.save()
+
+        booking = Booking.objects.create(
+            user=user,
+            box=box,
+            start_date=form.cleaned_data['start_date'],
+            end_date=form.cleaned_data['end_date'],
+        )
+
+        invoice = Invoice.objects.create(
+            booking=booking,
+            pays_until=datetime.datetime.today() + datetime.timedelta(days=3),
+            amount=box_amount,
+            discount=discount,
+        )
+
+        send_invoice(user, invoice)
 
         return JsonResponse({'status': 'ok'})
 
     def form_invalid(self, form):
-        if self.request.POST.get('change', '') == 'date':
-            box_amount = self.change_date(form)
+        if self.request.POST.get('change', ''):
+            box = Box.objects.get(pk=self.request.POST['box'])
+            box_amount = self.calculate_amount(form, box.price)
 
             return JsonResponse({
                 'box_amount': box_amount,
@@ -103,14 +155,25 @@ class PaymentFormViews(FormView):
             'errors': form.errors,
         })
 
-    def change_date(self, form):
-        box = Box.objects.get(pk=self.request.POST['box'])
+    def calculate_amount(self, form, price: int) -> int:
         start_date = form.cleaned_data['start_date']
         end_date = form.cleaned_data['end_date']
+        promocode = form.cleaned_data['promocode']
+        discount = 0
         months_difference = relativedelta(end_date, start_date)
         months_count = (months_difference.years * 12) + months_difference.months
+
+        if Discount.objects.filter(
+                promocode__iexact=promocode,
+                start_date__lte=datetime.datetime.today(),
+                end_date__gte=datetime.datetime.today(),
+        ).exists():
+            discount = Discount.objects.get(promocode__iexact=promocode).percent
+
         if start_date.day != end_date.day:
             months_count += 1
-        box_amount = box.price * months_count
+
+        box_amount = round((price - (price / 100 * discount)) * months_count)
 
         return box_amount
+
