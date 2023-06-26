@@ -8,7 +8,6 @@ from django.shortcuts import render
 from django.views.generic import TemplateView, FormView
 from django.urls import reverse_lazy
 
-
 from .models import (
     Booking,
     Box,
@@ -20,12 +19,13 @@ from .forms import PaymentForm, LeadForm
 from account.models import User
 from storage_emails.views import send_invoice
 
+
 class IndexView(TemplateView):
     template_name = 'index.html'
 
     def get(self, request, *args, **kwargs):
         return render(request, self.template_name)
-    
+
 
 class FAQView(TemplateView):
     template_name = 'faq.html'
@@ -73,20 +73,35 @@ class BookingView(TemplateView):
         start_date = datetime.datetime.today()
         end_date = start_date + relativedelta(months=default_months_count)
         max_start_date = start_date + relativedelta(months=min_months_count)
-        data_format ='%Y-%m-%d'
+        is_extension = False
+        data_format = '%Y-%m-%d'
+
+        if self.request.user.id:
+            email = self.request.user.email
+
+            if Booking.objects.filter(
+                    user=self.request.user.id,
+                    box=box,
+            ).exists():
+                booking = Booking.objects.get(user=self.request.user.id, box=box)
+                print(booking)
+                start_date = booking.end_date
+                end_date = start_date + relativedelta(months=default_months_count)
+                max_start_date = start_date + relativedelta(months=min_months_count)
+                is_extension = True
+
+        else:
+            email = ''
 
         context = {
             'box': box,
+            'email': email,
             'box_amount': box_amount,
             'start_date': start_date.strftime(data_format),
             'end_date': end_date.strftime(data_format),
             'max_start_date': max_start_date.strftime(data_format),
+            'is_extension': is_extension,
         }
-
-        if self.request.user.id:
-            context['email'] = self.request.user.email
-        else:
-            context['email'] = ''
 
         return render(request, self.template_name, context)
 
@@ -107,9 +122,9 @@ class PaymentFormViews(FormView):
             })
 
         if Discount.objects.filter(
-            promocode__iexact=promocode,
-            start_date__lte=datetime.datetime.today(),
-            end_date__gte=datetime.datetime.today(),
+                promocode__iexact=promocode,
+                start_date__lte=datetime.datetime.today(),
+                end_date__gte=datetime.datetime.today(),
         ).exists():
             discount = Discount.objects.get(promocode__iexact=promocode)
         else:
@@ -123,14 +138,20 @@ class PaymentFormViews(FormView):
             user.username = f'{user.email.split("@")[0]}_id{user.id}'
             user.save()
 
-
-
-        booking = Booking.objects.create(
-            user=user,
-            box=box,
-            start_date=form.cleaned_data['start_date'],
-            end_date=form.cleaned_data['end_date'],
-        )
+        if not self.request.POST.get('is_extension', ''):
+            booking = Booking.objects.create(
+                user=user,
+                box=box,
+                start_date=form.cleaned_data['start_date'],
+                end_date=form.cleaned_data['end_date'],
+            )
+        else:
+            booking = Booking.objects.get(
+                user=user,
+                box=box,
+            )
+            booking.end_date = form.cleaned_data['end_date']
+            booking.save()
 
         invoice = Invoice.objects.create(
             booking=booking,
@@ -184,4 +205,3 @@ class PaymentFormViews(FormView):
         box_amount = round((price - (price / 100 * discount)) * months_count)
 
         return box_amount
-

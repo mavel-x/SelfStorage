@@ -159,6 +159,7 @@ $('#payment-form-start_date').change(function(e){
             start_date: $('#payment-form-start_date').val(),
             end_date: $('#payment-form-end_date').val(),
             promocode: $('#payment-form-promocode').val(),
+            is_extension: $('#payment-form-extension').val(),
         },
         success: function(data){
             buttonPayment.text('Оплатить ' + data.box_amount + ' ₽');
@@ -182,6 +183,7 @@ $('#payment-form-end_date').change(function(e){
             start_date: $('#payment-form-start_date').val(),
             end_date: $('#payment-form-end_date').val(),
             promocode: $('#payment-form-promocode').val(),
+            is_extension: $('#payment-form-extension').val(),
         },
         success: function(data){
             buttonPayment.text('Оплатить ' + data.box_amount + ' ₽');
@@ -206,6 +208,7 @@ $('#payment-form-promocode').change(function(e){
             start_date: $('#payment-form-start_date').val(),
             end_date: $('#payment-form-end_date').val(),
             promocode: $('#payment-form-promocode').val(),
+            is_extension: $('#payment-form-extension').val(),
         },
         success: function(data){
             buttonPayment.text('Оплатить ' + data.box_amount + ' ₽');
