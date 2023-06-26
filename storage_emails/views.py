@@ -4,7 +4,8 @@ from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.views.decorators.http import require_POST
 
-from storage.models import Box, UnlockQR, Booking
+from account.models import User
+from storage.models import Box, UnlockQR, Booking, Invoice
 from storage_emails.utils import send_html_email
 
 
@@ -25,3 +26,13 @@ def unlock_box(request):
     })
     send_html_email(title, body, user.email)
     return JsonResponse({'status': 'ok'})
+
+
+def send_invoice(user: User, invoice: Invoice):
+    title = 'Счет за аренду складского бокса'
+    body = render_to_string('invoice.html', {
+        'title': title,
+        'user': user,
+        'invoice': invoice,
+    })
+    send_html_email(title, body, user.email)
