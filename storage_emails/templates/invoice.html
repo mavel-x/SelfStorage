@@ -1,0 +1,39 @@
+{% extends "email_base.html" %}
+
+{% block content %}
+
+  <style>
+    .invoice td {
+        padding-inline-end: 1rem;
+    }
+
+    .invoice {
+        background: white;
+        color: black;
+        padding: 0.5rem;
+    }
+  </style>
+
+  <div class="invoice">
+    <p>Клиент: {{ user.display_name }}</p>
+    <p>Срок аренды: до {{ invoice.pays_until|date }}</p>
+    <table>
+        <tr>
+            <th>Описание</th>
+            <th>Стоимость</th>
+        </tr>
+        <tr>
+            <td>Аренда складского бокса </td>
+            <td>{{ invoice.amount|floatformat:2 }} р.</td>
+        </tr>
+        <tr>
+          <td>Склад №{{ invoice.booking.box.storage.id }}, бокс №{{ invoice.booking.box.number }} </td>
+        </tr>
+    </table>
+    <p>К оплате: {{ invoice.amount|floatformat:2 }} р.</p>
+    <p>Спасибо за использование SelfStorage!</p>
+  </div>
+  <p>С уважением,<br>SelfStorage</p>
+
+
+{% endblock %}

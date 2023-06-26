@@ -1,15 +1,29 @@
 {% extends "email_base.html" %}
 
 {% block content %}
-    <p>Уважаемый {{ customer_name }},</p>
+  <p>Уважаемый {{ customer_name }},</p>
 
-    <p>
-      Мы хотели бы напомнить Вам, что аренда Вашего складского бокса истекает через
-      {{ expiration_date|timeuntil }}.
-      Пожалуйста, убедитесь, что Вы оплатили аренду вовремя, чтобы избежать дополнительных сборов.
-    </p>
+  <p>
+    Мы хотели бы напомнить Вам, что аренда следующих боксов подходит к концу:
+  </p>
 
-    <p>Если у Вас есть какие-либо вопросы, пожалуйста, напишите нам.</p>
+  {% for invoice in invoices %}
+    {% with box=invoice.booking.box %}
 
-    <p>С уважением,<br>SelfStorage</p>
+      <p>
+        <strong>Мой склад №{{ box.storage.id }}</strong>, {{ box.storage.address }},
+        <strong>Бокс №{{ box.number }}</strong>: <br>
+        истекает <strong>{{ invoice.pays_until|date }}</strong>
+      </p>
+
+    {% endwith %}
+  {% endfor %}
+
+  <p>
+    Пожалуйста, убедитесь, что Вы оплатили аренду вовремя, чтобы избежать дополнительных сборов.
+  </p>
+
+  <p>Если у Вас есть какие-либо вопросы, пожалуйста, напишите нам.</p>
+
+<p>С уважением,<br>SelfStorage</p>
 {% endblock %}

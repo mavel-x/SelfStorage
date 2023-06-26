@@ -218,10 +218,10 @@ class Booking(models.Model):
             return self.start_date + timezone.timedelta(days=1) < timezone.localdate()
         return self.paid_until() < timezone.localdate()
 
-    def expires_soon(self):
+    def expires_soon(self, days=7):
         if paid_until := self.paid_until():
             till_expiration = paid_until - timezone.localdate()
-            return timezone.timedelta(0) < till_expiration <= timezone.timedelta(days=7)
+            return timezone.timedelta(0) < till_expiration <= timezone.timedelta(days=days)
 
     def liquidate_on(self):
         if paid_until := self.paid_until():
