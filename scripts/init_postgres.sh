@@ -14,11 +14,11 @@ fi
 
 apt-get install libpq-dev
 
-docker run -d --name starburger-postgres \
+docker run -d --name selfstorage-postgres \
 --env-file .env -p 5432:5432 \
--v starburger_postgres:/var/lib/postgresql/data \
+-v selfstorage_postgres:/var/lib/postgresql/data \
 postgres:14
 sleep 1
 venv/bin/python ./manage.py migrate
 venv/bin/python manage.py upload_test_data
-docker stop -t 10 starburger-postgres
+docker stop -t 10 selfstorage-postgres
