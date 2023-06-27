@@ -13,7 +13,7 @@ venv/bin/pip install -U -r requirements.txt
 venv/bin/python manage.py collectstatic --noinput
 venv/bin/python manage.py makemigrations --noinput
 venv/bin/python manage.py migrate --noinput
-systemctl restart selfstorage-django.service
+systemctl restart selfstorage_django.service
 systemctl reload nginx
 
 echo "Project updated."
