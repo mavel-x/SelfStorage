@@ -1,0 +1,7 @@
+[Unit]
+Description=Selfstorage Services
+Requires=selfstorage_clearsessions.timer selfstorage_notices.timer selfstorage_postgres.service selfstorage_reminders.timer selfstorage_django.service
+After=selfstorage_clearsessions.timer selfstorage_notices.timer selfstorage_postgres.service selfstorage_reminders.timer selfstorage_django.service
+
+[Install]
+WantedBy=multi-user.target

@@ -19,6 +19,6 @@ docker run -d --name selfstorage-postgres \
 -v selfstorage_postgres:/var/lib/postgresql/data \
 postgres:14
 sleep 1
-venv/bin/python ./manage.py migrate
+venv/bin/python ./manage.py migrate --noinput
 venv/bin/python manage.py upload_test_data
 docker stop -t 10 selfstorage-postgres

@@ -1,0 +1,9 @@
+[Unit]
+Description=Timer for clearsessions of SelfStorage site
+
+[Timer]
+OnBootSec=60
+OnUnitActiveSec=1d
+
+[Install]
+WantedBy=multi-user.target

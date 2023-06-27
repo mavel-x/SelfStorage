@@ -8,12 +8,15 @@ if [ "$EUID" -ne 0 ]
     exit
 fi
 
+cd /opt/SelfStorage/
+
 git pull
 venv/bin/pip install -U -r requirements.txt
 venv/bin/python manage.py collectstatic --noinput
 venv/bin/python manage.py makemigrations --noinput
 venv/bin/python manage.py migrate --noinput
-systemctl restart selfstorage_django.service
+systemctl daemon-reload
+systemctl restart selfstorage.target
 systemctl reload nginx
 
 echo "Project updated."

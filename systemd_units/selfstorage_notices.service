@@ -1,0 +1,5 @@
+[Unit]
+Description=Send expired rent notices
+
+[Service]
+ExecStart=/opt/SelfStorage/venv/bin/python manage.py send_expired_notices

@@ -1,0 +1,9 @@
+[Unit]
+Description=Clearsessions of SelfStorage site
+
+[Service]
+WorkingDirectory=/opt/SelfStorage/
+ExecStart=/opt/SelfStorage/venv/bin/python3 manage.py clearsessions
+
+[Install]
+WantedBy=multi-user.target

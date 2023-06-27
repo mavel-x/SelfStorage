@@ -1,0 +1,8 @@
+[Unit]
+Description=Timer for rent notices
+
+[Timer]
+OnCalendar=*-*-* 12:00:00
+
+[Install]
+WantedBy=multi-user.target
