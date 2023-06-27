@@ -20,7 +20,7 @@ echo \
 apt-get update
 apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
-apt-get install -y nginx
+apt-get install -y nginx libpq-dev
 
 python3 -m venv ./venv
 ./venv/bin/pip install -r requirements.txt

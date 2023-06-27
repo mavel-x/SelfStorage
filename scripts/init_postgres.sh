@@ -14,8 +14,6 @@ if [ $( docker ps -a | grep selfstorage-postgres | wc -l ) -gt 0 ]
     exit
 fi
 
-apt-get install -y libpq-dev
-
 docker run -d --name selfstorage-postgres \
 --env-file .env -p 5432:5432 \
 -v selfstorage_postgres:/var/lib/postgresql/data \
