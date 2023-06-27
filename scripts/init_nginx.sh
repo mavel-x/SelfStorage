@@ -13,9 +13,9 @@ cd /opt/SelfStorage/
 ENV_FILE="./.env"
 NGINX_CONF_TEMPLATE="./nginx.conf.template"
 NGINX_CONF_OUTPUT="/etc/nginx/sites-enabled/selfstorage.conf"
-IP_ADDRESS=$(grep -oP 'IP_ADDRESS=\K.*' $ENV_FILE)
+SERVER_IP=$(grep -oP 'SERVER_IP=\K.*' $ENV_FILE)
 
 # Replace the placeholder in the Nginx configuration template with the IP address
-sed "s/{{IP_ADDRESS}}/$IP_ADDRESS/g" $NGINX_CONF_TEMPLATE > $NGINX_CONF_OUTPUT
+sed "s/{{SERVER_IP}}/$SERVER_IP/g" $NGINX_CONF_TEMPLATE > $NGINX_CONF_OUTPUT
 
 systemctl reload nginx
