@@ -7,9 +7,6 @@ if [ "$EUID" -ne 0 ]; then
   exit 1
 fi
 
-# Remove previous Docker versions
-for pkg in docker.io docker-doc docker-compose podman-docker containerd runc; do apt-get remove -y $pkg 2>/dev/null; done
-
 # Install Docker
 apt-get update
 apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release
