@@ -2,4 +2,5 @@
 Description=Send rent reminders
 
 [Service]
-ExecStart=/opt/SelfStorage/venv/bin/python manage.py send_rent_reminders
+WorkingDirectory=/opt/SelfStorage/
+ExecStart=venv/bin/python manage.py send_rent_reminders
