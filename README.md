@@ -22,10 +22,9 @@ Python3 должен быть установлен.
 - `NO_EMAIL` - не отправлять имейлы (во время разработки)
 
 Для деплоя:
-- `POSTGRES_PASSWORD`
-- `POSTGRES_USER`
-- `POSTGRES_DB`
-- `SERVER_IP` - для настройки nginx
+- `POSTGRES_PASSWORD`, `POSTGRES_USER`, `POSTGRES_DB`
+- `SERVER_NAME` - домен, без www
+- `SERVER_IP` - ipv4
 
 ### Автодеплой
 #### Для быстрого развертывания на сервере: 

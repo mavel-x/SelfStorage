@@ -1,4 +1,5 @@
 server {
+  server_name {{SERVER_NAME}} www.{{SERVER_NAME}};
   listen {{SERVER_IP}}:80;
 
   location / {
