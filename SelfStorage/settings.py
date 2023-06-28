@@ -87,7 +87,7 @@ WSGI_APPLICATION = 'SelfStorage.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-if DEBUG:
+if not env.str('POSTGRES_USER', None):
     DEFAULT_DATABASE = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
@@ -163,6 +163,6 @@ EMAIL_USE_TLS = True
 EMAIL_SEND_FROM = env.str('EMAIL_SEND_FROM', None)
 if env.bool('NO_EMAIL', False):
     EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
-
-# EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-# EMAIL_FILE_PATH = Path.home() / 'Desktop'
+if env.bool('EMAIL_TO_FILE', False):
+    EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+    EMAIL_FILE_PATH = Path.home() / 'Desktop'
