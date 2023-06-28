@@ -3,4 +3,4 @@ Description=Send expired rent notices
 
 [Service]
 WorkingDirectory=/opt/SelfStorage/
-ExecStart=venv/bin/python manage.py send_expired_notices
+ExecStart=/opt/SelfStorage/venv/bin/python manage.py send_expired_notices
