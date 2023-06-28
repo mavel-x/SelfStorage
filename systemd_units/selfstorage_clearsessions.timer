@@ -1,5 +1,6 @@
 [Unit]
 Description=Timer for clearsessions of SelfStorage site
+PartOf=selfstorage.target
 
 [Timer]
 OnBootSec=60

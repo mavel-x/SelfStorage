@@ -2,6 +2,7 @@
 Description=Selfstorage Postgres Docker Container
 Requires=docker.service
 After=docker.service
+PartOf=selfstorage.target
 
 [Service]
 Restart=always

@@ -1,5 +1,6 @@
 [Unit]
 Description=Timer for rent notices
+PartOf=selfstorage.target
 
 [Timer]
 OnCalendar=*-*-* 12:00:00

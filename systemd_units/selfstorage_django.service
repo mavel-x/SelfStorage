@@ -1,6 +1,7 @@
 [Unit]
 Description=Django service for SelfStorage app
 After=network.target
+PartOf=selfstorage.target
 
 [Service]
 User=root
