@@ -13,7 +13,7 @@ Python3 должен быть установлен.
 ### Переменные окружения
 - `DJANGO_SECRET_KEY` (обязательно) - секретный ключ django;
 - `DEBUG` (опционально) - режим отладки (по умолчанию `False`);
-- `ALLOWED_HOSTS` (опционально) - разрешённые хосты;
+- `ALLOWED_HOSTS` - разрешённые хосты;
 
 Для отправки email-уведомлений:
 - `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD` -
@@ -22,7 +22,7 @@ Python3 должен быть установлен.
 - `NO_EMAIL` - не отправлять имейлы (во время разработки)
 
 Для деплоя:
-- `POSTGRES_PASSWORD`, `POSTGRES_USER`, `POSTGRES_DB`
+- `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` - переменные для postgres в контейнере
 - `SERVER_NAME` - домен, без www
 - `SERVER_IP` - ipv4
 
